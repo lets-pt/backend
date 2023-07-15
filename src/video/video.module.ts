@@ -7,6 +7,7 @@ import { Video, VideoSchema } from './schemas/video.schemas';
 @Module({
   imports: [MongooseModule.forFeature([{name: Video.name, schema: VideoSchema}])],
   controllers: [VideoController],
-  providers: [VideoService]
+  providers: [VideoService],
+  exports: [VideoService] //비디오 서비스 내보내기
 })
 export class VideoModule {}
