@@ -1,5 +1,6 @@
+//s3에서 사용할 수 있게 readOnly 제거
 export class CreateVideoDTO {
-    readonly id: string;
-    readonly filename: string;
-    readonly fileurl: string;
+    id: string;
+    filename: string;
+    fileurl: string;
 }
