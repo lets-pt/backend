@@ -7,7 +7,7 @@ export class S3Controller {
     constructor(private readonly s3Service: S3Service) { }
     
     @Post()
-    @UseInterceptors(FileInterceptor('file'))
+    @UseInterceptors(FileInterceptor('video'))
     uploadFile(@UploadedFile() file: Express.Multer.File) {
         console.log(file);
         return this.s3Service.uploadFile(file);
