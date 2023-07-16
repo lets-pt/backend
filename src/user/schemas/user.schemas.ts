@@ -1,30 +1,43 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { IsNotEmpty, IsString } from "class-validator";
-import { Document } from 'mongoose';
+import { Options } from '@nestjs/common';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { Document, SchemaOptions } from 'mongoose';
+
+const options: SchemaOptions = {
+  timestamps: true,
+};
 
 export type UserDocument = User & Document;
 
-@Schema()
+@Schema(options)
 export class User extends Document {
-    @Prop()
-    @IsString()
-    @IsNotEmpty()
-    id: string;
+  @Prop({
+    required: true,
+    unique: true,
+  })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 
-    @Prop()
-    @IsString()
-    @IsNotEmpty()
-    password: string;
+  @Prop({
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 
-    @Prop()
-    @IsString()
-    @IsNotEmpty()
-    email: string;
+  @Prop({
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  password: string;
 
-    @Prop()
-    @IsString()
-    @IsNotEmpty()
-    nickname: string;
+  @Prop()
+  @IsString()
+  imgUrl: string;
+
+  readonly readOnlyData: { id: string; email: string; name: string };
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
