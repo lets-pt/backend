@@ -1,10 +1,10 @@
 import { Body, UseFilters, UseInterceptors } from '@nestjs/common';
-import { Controller, Get, Post, Put } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exception.filter';
 import { UserRequestDto } from './dto/user.request.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ReadOnlyUserDto } from './dto/user.dto';
 
 @Controller('user')
