@@ -6,6 +6,8 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { S3Module } from './s3/s3.module';
 import { VideoModule } from './video/video.module';
+import { ChatGptAiModule } from './chat-gpt-ai/chat-gpt-ai.module';
+
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import * as mongoose from 'mongoose';
 
@@ -16,7 +18,7 @@ import * as mongoose from 'mongoose';
     UserModule,
     S3Module,
     VideoModule,
-  ],
+    ChatGptAiModule],
   controllers: [AppController],
   providers: [AppService],
 })
