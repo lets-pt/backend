@@ -3,6 +3,7 @@ import { User } from '../user.schema';
 
 export class UserRequestDto extends PickType(User, [
   'id',
-  'name',
   'password',
+  'name',
+  'email',
 ] as const) {}
