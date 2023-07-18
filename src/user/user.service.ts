@@ -1,20 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from './schemas/user.schemas';
 import { Model } from 'mongoose';
-import { CreateUserDTO } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
+import { User } from './user.schema';
+import { UserRequestDto } from './dto/user.request.dto';
 
 @Injectable()
 export class UserService {
-    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
-    
-    //유저 생성
-    async create(createUserDTO: CreateUserDTO): Promise<User> {
-        return this.userModel.create(createUserDTO);
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<User>,
+  ) {}
+
+  async signUp(body: UserRequestDto) {
+    const { email, name, password } = body;
+    const isUserExist = await this.userModel.exists({ email });
+
+    if (isUserExist) {
+      throw new UnauthorizedException('해당하는 이메일는 이미 존재합니다.');
     }
 
-    //전체 유저 불러오기
-    async findAllUser(): Promise<User[]> {
-        return this.userModel.find().exec();
-    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await this.userModel.create({
+      email,
+      name,
+      password: hashedPassword,
+    });
+
+    return user.readOnlyData;
+  }
 }
