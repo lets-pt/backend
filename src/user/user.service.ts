@@ -16,7 +16,7 @@ export class UserService {
     const isUserExist = await this.userModel.exists({ id });
 
     if (isUserExist) {
-      throw new UnauthorizedException('해당하는 이메일는 이미 존재합니다.');
+      throw new UnauthorizedException('해당하는 Id는 이미 존재합니다.');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
