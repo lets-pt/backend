@@ -1,7 +1,6 @@
 import{IsNotEmpty, IsNumber,IsOptional,IsString} from "class-validator"
 
 export class GetAiModelAnswer{
-
     @IsString()
     @IsNotEmpty()
     question:string
@@ -17,5 +16,4 @@ export class GetAiModelAnswer{
     @IsNumber()
     @IsOptional()
     maxTokens:number
-
 }

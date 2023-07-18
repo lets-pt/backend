@@ -8,7 +8,6 @@ const DEFAULT_MAX_TOKENS = 2048
 
 @Injectable()
 export class ChatGptAiService {
-
     private readonly openAiApi:OpenAIApi
     private selectedModelId:string|undefined
 
@@ -17,7 +16,6 @@ export class ChatGptAiService {
             organization: process.env.ORGANIZATION_ID,
             apiKey: process.env.OPENAI_API_KEY,
         });
-
         this.openAiApi = new OpenAIApi(configuration);
     }   
 
@@ -32,14 +30,12 @@ export class ChatGptAiService {
         return modelId
     }
 
-
     async listModels(){
         const models = await this.openAiApi.listModels()
         return models.data
     }
-    async getModelAnswer(input:GetAiModelAnswer){
 
-        
+    async getModelAnswer(input:GetAiModelAnswer){
         try {
             const {question,temperature,modelId,maxTokens} = input 
              let model = DEFAULT_MODEL_ID
@@ -59,18 +55,15 @@ export class ChatGptAiService {
              }
 
              const response = await this.openAiApi.createCompletion(params)
-
              const {data} =response
              if(data.choices.length){
 
-                return data.choices[0]['text'].replace(/\n/g, '');;
+                return data.choices[0]['text'].replace(/\n/g, '');
              }
-
-             return response.data[0]['text'].replace(/\n/g, '');;
+             return response.data[0]['text'].replace(/\n/g, '');
 
         } catch (error) {
-            
+            console.log(error);
         }
-
     }
 }

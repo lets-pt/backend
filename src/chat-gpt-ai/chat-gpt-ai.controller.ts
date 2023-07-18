@@ -3,8 +3,6 @@ import { ChatGptAiService } from './chat-gpt-ai.service';
 import { GetAiModelAnswer } from './model/get-ai-model-answer';
 import { SetSelctedModel } from './model/set-selected-model';
 
-
-
 @Controller('chat-gpt-ai')
 export class ChatGptAiController {
     constructor(private readonly service: ChatGptAiService){}
@@ -27,8 +25,4 @@ export class ChatGptAiController {
     setModel(@Body() data: SetSelctedModel){
         this.service.setModelId(data.modelId)
     }
-
-
-
-
 }
