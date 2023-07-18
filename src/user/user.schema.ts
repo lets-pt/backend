@@ -20,9 +20,9 @@ export class User extends Document {
     required: true,
     unique: true,
   })
-  @IsEmail()
+  @IsString()
   @IsNotEmpty()
-  email: string;
+  id: string;
 
   @ApiProperty({
     example: '1106',
@@ -56,7 +56,6 @@ export const UserSchema = SchemaFactory.createForClass(User);
 UserSchema.virtual('readOnlyData').get(function (this: User) {
   return {
     id: this.id,
-    email: this.email,
     name: this.name,
   };
 });
