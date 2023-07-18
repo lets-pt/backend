@@ -12,13 +12,12 @@ export type UserDocument = User & Document;
 @Schema(options)
 export class User extends Document {
   @ApiProperty({
-    example: 'vldzm4268@gmail.com',
-    description: 'email',
+    example: 'vldzm4268',
+    description: 'id',
     required: true,
   })
   @Prop({
     required: true,
-    unique: true,
   })
   @IsString()
   @IsNotEmpty()
@@ -48,7 +47,21 @@ export class User extends Document {
   @IsNotEmpty()
   name: string;
 
-  readonly readOnlyData: { id: string; email: string; name: string };
+  @ApiProperty({
+    example: 'vldzm4268@gmail.com',
+    description: 'email',
+    required: true,
+  })
+  @Prop({
+    IsEmail: true,
+    required: true,
+    unique: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+
+  readonly readOnlyData: { email: string; id: string; name: string };
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
@@ -56,6 +69,7 @@ export const UserSchema = SchemaFactory.createForClass(User);
 UserSchema.virtual('readOnlyData').get(function (this: User) {
   return {
     id: this.id,
+    email: this.email,
     name: this.name,
   };
 });
