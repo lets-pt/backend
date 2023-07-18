@@ -11,9 +11,9 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
-  async signUp(body: UserRequestDto) {
-    const { email, name, password } = body;
-    const isUserExist = await this.userModel.exists({ email });
+  async signUp(userRequestDTO: UserRequestDto) {
+    const { id, name, password } = userRequestDTO;
+    const isUserExist = await this.userModel.exists({ id });
 
     if (isUserExist) {
       throw new UnauthorizedException('해당하는 이메일는 이미 존재합니다.');
@@ -22,7 +22,7 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await this.userModel.create({
-      email,
+      id,
       name,
       password: hashedPassword,
     });

@@ -30,8 +30,8 @@ export class UserController {
   })
   @ApiOperation({ summary: '회원가입' })
   @Post()
-  signUp(@Body() body: UserRequestDto) {
-    return this.userService.signUp(body);
+  signUp(@Body() userRequestDTO: UserRequestDto) {
+    return this.userService.signUp(userRequestDTO);
   }
 
   @ApiOperation({ summary: '로그인' })
