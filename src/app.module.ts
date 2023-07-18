@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { S3Module } from './s3/s3.module';
 import { VideoModule } from './video/video.module';
+import { ChatGptAiModule } from './chat-gpt-ai/chat-gpt-ai.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { VideoModule } from './video/video.module';
     MongooseModule.forRoot(process.env.MONGODB_URI),
     UserModule,
     S3Module,
-    VideoModule],
+    VideoModule,
+    ChatGptAiModule],
   controllers: [AppController],
   providers: [AppService],
 })
