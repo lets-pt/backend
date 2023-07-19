@@ -10,6 +10,11 @@ export class UserRepository {
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
+  async findUserById(id: string): Promise<User | null> {
+    const users = await this.userModel.findOne({ id });
+    return users;
+  }
+
   async existsById(id: string): Promise<boolean> {
     const result = await this.userModel.exists({ id });
     if (result) return true;
