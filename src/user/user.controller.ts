@@ -1,4 +1,10 @@
-import { Body, UseFilters, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  UseFilters,
+  UseGuards,
+  UseInterceptors,
+  Req,
+} from '@nestjs/common';
 import { Controller, Get, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
@@ -8,6 +14,9 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { ReadOnlyUserDto } from './dto/user.dto';
 import { AuthService } from 'src/auth/auth.service';
 import { LoginRequestDto } from 'src/auth/dto/login.request.dto';
+import { JwtAuthGuard } from 'src/auth/jwt/jwt.guard';
+import { CurrentUser } from 'src/common/decorators/user.decorator';
+import { User } from './user.schema';
 
 @Controller('user')
 @UseInterceptors(SuccessInterceptor)
@@ -19,9 +28,10 @@ export class UserController {
   ) {}
 
   @ApiOperation({ summary: '현재 유저 가져오기' })
+  @UseGuards(JwtAuthGuard)
   @Get()
-  getCurrentUser() {
-    return 'current user';
+  getCurrentUser(@CurrentUser() user: User) {
+    return user.readOnlyData;
   }
 
   @ApiResponse({
