@@ -31,7 +31,7 @@ export class AuthService {
       throw new UnauthorizedException('아이디와 비밀번호를 확인해주세요.');
     }
 
-    const payload = { id: id, sub: user.id };
+    const payload = { id: id, sub: user._id };
 
     return {
       token: this.jwtService.sign(payload),
