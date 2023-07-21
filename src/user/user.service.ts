@@ -1,6 +1,4 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-// import { InjectModel } from '@nestjs/mongoose';
-// import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { UserRequestDto } from './dto/user.request.dto';
 import { UserRepository } from './user.repository';
