@@ -3,9 +3,8 @@ import {
   UseFilters,
   UseGuards,
   UseInterceptors,
-  Req,
-  Param,
-} from '@nestjs/common';
+}
+from '@nestjs/common';
 import { Controller, Get, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
@@ -51,15 +50,15 @@ export class UserController {
   }
 
   @ApiOperation({summary: '아이디 중복 확인'})
-  @Post('doubleCheckId/:id')
-  doubleCheckId(@Param('id') id: string) {
-    return this.userService.isUserExistId(id);
+  @Post('doubleCheckId')
+  async doubleCheckId(@Body('id') id: string) {
+    return await this.userService.isUserExistId(id);
   }
 
   @ApiOperation({summary: '닉네임 중복 확인'})
-  @Post('doubleCheckName/:name')
-  doubleCheckName(@Param('name') name: string) {
-    return this.userService.isUserExistName(name);
+  @Post('doubleCheckName')
+  async doubleCheckName(@Body('name') name: string) {
+    return await this.userService.isUserExistName(name);
   }
 
   @ApiOperation({ summary: '로그인' })
