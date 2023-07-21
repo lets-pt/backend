@@ -4,6 +4,7 @@ import {
   UseGuards,
   UseInterceptors,
   Req,
+  Param,
 } from '@nestjs/common';
 import { Controller, Get, Post } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -47,6 +48,18 @@ export class UserController {
   @Post()
   signUp(@Body() userRequestDTO: UserRequestDto) {
     return this.userService.signUp(userRequestDTO);
+  }
+
+  @ApiOperation({summary: '아이디 중복 확인'})
+  @Post('doubleCheckId/:id')
+  doubleCheckId(@Param('id') id: string) {
+    return this.userService.isUserExistId(id);
+  }
+
+  @ApiOperation({summary: '닉네임 중복 확인'})
+  @Post('doubleCheckName/:name')
+  doubleCheckName(@Param('name') name: string) {
+    return this.userService.isUserExistName(name);
   }
 
   @ApiOperation({ summary: '로그인' })

@@ -1,8 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+// import { InjectModel } from '@nestjs/mongoose';
+// import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { User } from './user.schema';
 import { UserRequestDto } from './dto/user.request.dto';
 import { UserRepository } from './user.repository';
 
@@ -10,6 +9,17 @@ import { UserRepository } from './user.repository';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
+  //중복된 아이디 확인
+  async isUserExistId(id: string) {
+    return await this.userRepository.existsById(id);
+  }
+
+  //중복된 닉네임 확인
+  async isUserExistName(name: string) {
+    return await this.userRepository.existsByName(name);
+  }
+
+  //회원가입
   async signUp(body: UserRequestDto) {
     const { id, password, name, email } = body;
     const isUserExist = await this.userRepository.existsById(id);
