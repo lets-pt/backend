@@ -7,9 +7,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { S3Module } from './s3/s3.module';
 import { VideoModule } from './video/video.module';
 import { ChatGptAiModule } from './chat-gpt-ai/chat-gpt-ai.module';
-
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { AuthModule } from './auth/auth.module';
+import { FfmpegModule } from './ffmpeg/ffmpeg.module';
 import * as mongoose from 'mongoose';
 
 @Module({
@@ -20,7 +20,8 @@ import * as mongoose from 'mongoose';
     S3Module,
     VideoModule,
     ChatGptAiModule,
-    AuthModule],
+    AuthModule,
+    FfmpegModule],
   controllers: [AppController],
   providers: [AppService],
 })
