@@ -3,9 +3,8 @@ import {
   UseFilters,
   UseGuards,
   UseInterceptors,
-  Req,
-  Param,
-} from '@nestjs/common';
+}
+from '@nestjs/common';
 import { Controller, Get, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
