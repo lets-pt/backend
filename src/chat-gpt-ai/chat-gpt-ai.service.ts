@@ -57,9 +57,12 @@ export class ChatGptAiService {
              const response = await this.openAiApi.createCompletion(params)
              const {data} =response
              if(data.choices.length){
-
-                return data.choices[0]['text'].replace(/\n/g, '');
+                let answer = data.choices[0]['text'].replace(/\n/g, '');
+                answer = answer.replace(/^\.+/, '');
+                return answer
              }
+             let answer = response.data[0]['text'].replace(/\n/g, '');
+             answer = answer.replace(/^\.+/, '');
              return response.data[0]['text'].replace(/\n/g, '');
 
         } catch (error) {
