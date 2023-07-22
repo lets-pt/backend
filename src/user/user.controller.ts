@@ -61,6 +61,12 @@ export class UserController {
     return await this.userService.isUserExistName(name);
   }
 
+  @ApiOperation({ summary: "이메일 중복 확인" })
+  @Post('doubleCheckEmail')
+  async doubleCheckEmail(@Body('email') email: string) {
+    return await this.userService.isUserExistEmail(email);
+  }
+
   @ApiOperation({ summary: '로그인' })
   @Post('login')
   logIn(@Body() data: LoginRequestDto) {
