@@ -32,6 +32,12 @@ export class UserRepository {
     else return false;
   }
 
+  async existsByEmail(email: string): Promise<boolean> {
+    const result = await this.userModel.exists({ email });
+    if (result) return true;
+    else return false;
+  }
+
   async create(user: UserRequestDto): Promise<User> {
     return await this.userModel.create(user);
   }

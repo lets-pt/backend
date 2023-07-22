@@ -17,6 +17,10 @@ export class UserService {
     return await this.userRepository.existsByName(name);
   }
 
+  async isUserExistEmail(email: string) {
+    return await this.userRepository.existsByEmail(email);
+  }
+
   //회원가입
   async signUp(body: UserRequestDto) {
     const { id, password, name, email } = body;
