@@ -41,4 +41,22 @@ export class RoomGateway {
     console.log(room);
     socket.emit("create-succ", room); //참관코드 전송
   }
+
+  @SubscribeMessage('joinRoom')
+  handleJoinRoom(@ConnectedSocket() socket, @MessageBody() data) {
+    const { visitorcode, userId } = data;
+
+    socket.join(visitorcode);
+    console.log(visitorcode, userId);
+    socket.emit("join-succ", "입장");
+  }
+
+  @SubscribeMessage('exitRoom')
+  handleExitRoom(@ConnectedSocket() socket, @MessageBody() data) {
+    const { visitorcode, userId } = data;
+
+    socket.leave(visitorcode);
+    console.log(visitorcode, userId);
+    socket.emit("exit-succ", "퇴장");
+  }
 }
