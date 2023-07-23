@@ -10,6 +10,8 @@ import { ChatGptAiModule } from './chat-gpt-ai/chat-gpt-ai.module';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { AuthModule } from './auth/auth.module';
 import { FfmpegModule } from './ffmpeg/ffmpeg.module';
+import { CommentGateway, RoomGateway } from './comment/comment.gateway';
+import { RoomModule } from './room/room.module';
 import * as mongoose from 'mongoose';
 
 @Module({
@@ -21,9 +23,10 @@ import * as mongoose from 'mongoose';
     VideoModule,
     ChatGptAiModule,
     AuthModule,
-    FfmpegModule],
+    FfmpegModule,
+    RoomModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CommentGateway, RoomGateway],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean = process.env.MODE === 'dev' ? true : false;
