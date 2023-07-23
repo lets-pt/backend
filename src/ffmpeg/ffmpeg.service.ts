@@ -29,7 +29,7 @@ export class FfmpegService {
       fs.writeFileSync(screenTempFilePath, inputScreenBuffer);
 
       // 임시 출력파일
-      const combinedVideoFilename = `${uuidv4()}.mp4`;
+      const combinedVideoFilename = cam.originalname.substring(10);
       const combinedVideoFilePath = tmp.tmpNameSync({ postfix: '.mp4' });
 
       await new Promise<void>((resolve, reject) => {
@@ -58,7 +58,6 @@ export class FfmpegService {
       fs.unlinkSync(screenTempFilePath);
       fs.unlinkSync(combinedVideoFilePath);
 
-      const modifiedCombinedVideoFilename = 'output_video.mp4'; // 파일이름
 
       // S3에 업로드
       await this.s3Service.uploadFile({
@@ -70,9 +69,11 @@ export class FfmpegService {
         size: combinedVideoBuffer.length,
         stream: null,
         destination: null,
-        filename: modifiedCombinedVideoFilename,
+        filename: null,
         path: null
       });
+
+     return await this.s3Service.uploadFile(cam);
 
     } catch (err) {
       console.error('Error during FFmpeg processing:', err);
