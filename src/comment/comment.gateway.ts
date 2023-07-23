@@ -8,7 +8,7 @@ export class CommentGateway {
   
   @WebSocketServer() server: Server;
 
-  @SubscribeMessage('comment')
+  @SubscribeMessage('addComment')
   handleMessage(socket: Socket, data: any): void {
     //코멘트, 시간, 코멘트 남긴 유저
     const { visitorcode, time, userId, comment } = data;
@@ -28,15 +28,17 @@ export class RoomGateway {
   @WebSocketServer() server: Server;
 
   @SubscribeMessage('createRoom')
-  handleMessage(@ConnectedSocket() socket, @MessageBody() data) {
+  async handleMessage(@ConnectedSocket() socket, @MessageBody() data) {
     //방을 생성한 사람의 ID
     const { userId } = data;
 
     //참관코드 생성 및 DB 관련 작업
-    const room = this.roomService.createRoom(userId);
+    const room = await this.roomService.createRoom(userId);
     this.rooms.push(room);
 
     //방장이 방에 입장하도록 한다.
     socket.join(room); 
+    console.log(room);
+    socket.emit("create-succ", room); //참관코드 전송
   }
 }
