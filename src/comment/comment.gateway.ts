@@ -59,7 +59,7 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { visitorcode, userId } = data;
 
     socket.join(visitorcode);
-    console.log(visitorcode, userId);
+    console.log("join : ",visitorcode, userId);
     socket.emit("join-succ", "입장");
   }
 
