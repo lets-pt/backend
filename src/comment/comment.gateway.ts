@@ -13,7 +13,7 @@ export class CommentGateway {
     //코멘트, 시간, 코멘트 남긴 유저
     const { visitorcode, time, userId, comment } = data;
 
-    //Todo: room DB에 저장
+    //room DB에 저장
     this.roomService.addCommentToRoom(data);
   }
 }
