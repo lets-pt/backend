@@ -8,7 +8,7 @@ import { AddCommentDTO } from './dto/add-comment.dto';
 export class RoomService {
     constructor(@InjectModel(Room.name) private roomModel: Model<RoomDocument>) { }
 
-    async createRoom(userId: String): Promise<String> {
+    async createRoom(userId: String): Promise<string> {
         const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
         let code = '';
         for (let i = 0; i < 10; i++) { //10자리 참관코드 생성

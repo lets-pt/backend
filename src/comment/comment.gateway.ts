@@ -1,8 +1,8 @@
-import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { RoomService } from 'src/room/room.service';
 
-@WebSocketGateway({namespace: 'comment'}) //comment를 받을 클래스
+@WebSocketGateway({cors: { origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }, namespace: 'comment'}) //comment를 받을 클래스
 export class CommentGateway {
   constructor(private readonly roomService: RoomService) { }
   
@@ -18,14 +18,26 @@ export class CommentGateway {
   }
 }
 
-@WebSocketGateway({ namespace: 'room' })
-export class RoomGateway {
+@WebSocketGateway({ cors: { origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }, namespace: 'room' })
+export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
   constructor(
     private readonly commentGateway: CommentGateway,
     private readonly roomService: RoomService,) { }
   rooms = [];
 
   @WebSocketServer() server: Server;
+
+  afterInit(server: Server) {
+    console.log('WebSocket server initialized.');
+  }
+
+  handleConnection(socket: Socket) {
+    console.log(`Client connected: ${socket.id}`);
+  }
+
+  handleDisconnect(socket: Socket) {
+    console.log(`Client disconnected: ${socket.id}`);
+  }
 
   @SubscribeMessage('createRoom')
   async handleMessage(@ConnectedSocket() socket, @MessageBody() data) {
@@ -38,7 +50,7 @@ export class RoomGateway {
 
     //방장이 방에 입장하도록 한다.
     socket.join(room); 
-    console.log(room);
+    console.log("join: ",room, userId);
     socket.emit("create-succ", room); //참관코드 전송
   }
 
@@ -58,5 +70,26 @@ export class RoomGateway {
     socket.leave(visitorcode);
     console.log(visitorcode, userId);
     socket.emit("exit-succ", "퇴장");
+  }
+
+  @SubscribeMessage('offer')
+  handleOffer(@ConnectedSocket() socket, @MessageBody() data) {
+    const { visitorcode, offer } = data;
+
+    socket.to(visitorcode).emit("offer", offer);
+  }
+
+  @SubscribeMessage('answer')
+  handleAnswer(@ConnectedSocket() socket, @MessageBody() data) {
+    const { visitorcode, answer } = data;
+
+    socket.to(visitorcode).emit("answer", answer);
+  }
+
+  @SubscribeMessage('ice')
+  handleIcecandidate(@ConnectedSocket() socket, @MessageBody() data) {
+    const { visitorcode, icecandidate } = data;
+
+    socket.to(visitorcode).emit("ice", icecandidate);
   }
 }
