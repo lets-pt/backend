@@ -50,7 +50,7 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     //방장이 방에 입장하도록 한다.
     socket.join(room); 
-    console.log("join: ",room, userId);
+    console.log("createRoom join: ",room, userId);
     socket.emit("create-succ", room); //참관코드 전송
   }
 
@@ -59,37 +59,37 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { visitorcode, userId } = data;
 
     socket.join(visitorcode);
-    console.log("join : ",visitorcode, userId);
+    console.log("joinRoom join : ",visitorcode, userId);
     socket.emit("join-succ", "입장");
   }
 
-  @SubscribeMessage('exitRoom')
-  handleExitRoom(@ConnectedSocket() socket, @MessageBody() data) {
-    const { visitorcode, userId } = data;
+  // @SubscribeMessage('exitRoom')
+  // handleExitRoom(@ConnectedSocket() socket, @MessageBody() data) {
+  //   const { visitorcode, userId } = data;
 
-    socket.leave(visitorcode);
-    console.log(visitorcode, userId);
-    socket.emit("exit-succ", "퇴장");
-  }
+  //   socket.leave(visitorcode);
+  //   console.log(visitorcode, userId);
+  //   socket.emit("exit-succ", "퇴장");
+  // }
 
   @SubscribeMessage('offer')
   handleOffer(@ConnectedSocket() socket, @MessageBody() data) {
     const { visitorcode, offer } = data;
 
-    socket.to(visitorcode).emit("offer", offer);
+    socket.to(visitorcode).emit("offer", data);
   }
 
   @SubscribeMessage('answer')
   handleAnswer(@ConnectedSocket() socket, @MessageBody() data) {
     const { visitorcode, answer } = data;
 
-    socket.to(visitorcode).emit("answer", answer);
+    socket.to(visitorcode).emit("answer", data);
   }
 
-  @SubscribeMessage('ice')
+  @SubscribeMessage('icecandidate')
   handleIcecandidate(@ConnectedSocket() socket, @MessageBody() data) {
     const { visitorcode, icecandidate } = data;
 
-    socket.to(visitorcode).emit("ice", icecandidate);
+    socket.to(visitorcode).emit("icecandidate", data);
   }
 }
