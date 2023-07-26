@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { S3Service } from 'src/s3/s3.service';
+import { PresentationService } from 'src/presentation/presentation.service';
 import { v4 as uuidv4 } from 'uuid';
 import * as tmp from 'tmp';
-import * as fs from 'fs'; // 파일시스템 관련 모듈
+import * as fs from 'fs';
 
-const ffmpeg = require('fluent-ffmpeg'); // fluent-ffmpeg 라이브러리를 불러와 ffmpeg 변수에 할당
+const ffmpeg = require('fluent-ffmpeg');
 
 @Injectable()
 export class FfmpegService {
-  constructor(private s3Service: S3Service) {}
+  constructor(private s3Service: S3Service, private presentationService: PresentationService) {}
 
-  async recieveFiles(cam: Express.Multer.File, screen: Express.Multer.File) {
+  async recieveFiles(cam: Express.Multer.File, screen: Express.Multer.File, title: string) {
     const inputCamBuffer = cam.buffer;
     const inputScreenBuffer = screen.buffer;
 
@@ -39,7 +40,7 @@ export class FfmpegService {
           .output(combinedVideoFilePath)
           .videoCodec('libx264')
           .audioCodec('aac')
-          .outputOptions('-vf', 'crop=1250:380:0:260')
+          // .outputOptions('-vf', 'crop=1250:380:0:260') 화면 자르기
           .format('mp4')
           .on('end', () => {
             resolve();
@@ -50,7 +51,6 @@ export class FfmpegService {
           .run();
       });
 
-    
       const combinedVideoBuffer = fs.readFileSync(combinedVideoFilePath);
 
       // 임시파일 삭제
@@ -58,9 +58,8 @@ export class FfmpegService {
       fs.unlinkSync(screenTempFilePath);
       fs.unlinkSync(combinedVideoFilePath);
 
-
       // S3에 업로드
-      await this.s3Service.uploadFile({
+      const result = await this.s3Service.uploadFile({
         fieldname: 'combinedVideo',
         originalname: combinedVideoFilename,
         encoding: '7bit',
@@ -70,10 +69,10 @@ export class FfmpegService {
         stream: null,
         destination: null,
         filename: null,
-        path: null
+        path: null,
       });
 
-     return await this.s3Service.uploadFile(cam);
+      await this.presentationService.updateResultVideo(title, result.fileurl);
 
     } catch (err) {
       console.error('Error during FFmpeg processing:', err);
