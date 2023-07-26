@@ -16,4 +16,14 @@ export class PresentationController {
     updatePresentationResultVideo(@Body() body: any): Promise<Presentation> {
         return this.presentationService.updateResultVideo(body.title, body.resultVideo);
     }
+
+    @Post('update')
+    updatePresentation(@Body() body: any): Promise<Presentation> {
+        return this.presentationService.updatePresentation(body.title, body.sttScript, body.comment, body.pdfTime);
+    }
+
+    @Post('question')
+    updateQuestion(@Body() body: any): Promise<Presentation> {
+        return this.presentationService.updateQuestion(body.title, body.question, body.answer);
+    }
 }
