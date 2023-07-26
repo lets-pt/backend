@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Room, RoomDocument } from './schemas/room.schemas';
 import { Model } from 'mongoose';
-import { AddCommentDTO } from './dto/add-comment.dto';
 
 @Injectable()
 export class RoomService {
@@ -22,30 +21,11 @@ export class RoomService {
         const data = {
             "visitorcode": code,
             "id": userId,
-            "comment": [],
         };
         const result = await this.roomModel.create(data);
         if (!result)
             return null;
         return code;
-    }
-
-    async addCommentToRoom(addCommentDTO: AddCommentDTO) {
-        const { visitorcode, time, userid, comment } = addCommentDTO;
-        const room = await this.roomModel.findOne({ visitorcode });
-        if (!room) {
-            throw new Error("Not Exist room");
-        }
-
-        const data = {
-            "time": time,
-            "userid": userid,
-            "message": comment
-        };
-        room.comment.push(data);
-
-        //변경사항 저장
-        await room.save();
     }
 
     async findAllRoom(): Promise<Room[]> {

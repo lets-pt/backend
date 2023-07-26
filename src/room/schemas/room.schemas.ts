@@ -4,12 +4,6 @@ import { Document } from 'mongoose';
 
 export type RoomDocument = Room & Document;
 
-export interface Comment {
-    time: string;
-    userid: string;
-    message: string;
-}
-
 @Schema()
 export class Room extends Document {
     @Prop()
@@ -21,9 +15,6 @@ export class Room extends Document {
     @IsString()
     @IsNotEmpty()
     id: string;
-
-    @Prop({ type: [{ time: String, userid: String, message: String }] })
-    comment: Comment[];
 }
 
 export const RoomSchema = SchemaFactory.createForClass(Room);
