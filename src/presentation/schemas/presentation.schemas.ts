@@ -4,6 +4,7 @@ import { Document } from 'mongoose';
 import { Comment } from "./comment.schemas";
 import { Question } from "./question.schemas";
 import { TimeData } from "./time.schemas";
+import { WordData } from "./word.schemas";
 
 export type PresentationDocument = Presentation & Document;
     
@@ -22,6 +23,12 @@ export class Presentation extends Document{ //Presentation
     @Prop()
     @IsString()
     pdfURL: string;
+
+    @Prop()
+    recommendedWord: WordData[];
+
+    @Prop()
+    forbiddenWord: WordData[];
 
     @Prop()
     @IsString()
