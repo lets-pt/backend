@@ -86,10 +86,10 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     socket.to(visitorcode).emit("answer", data);
   }
 
-  @SubscribeMessage('icecandidate')
+  @SubscribeMessage('ice')
   handleIcecandidate(@ConnectedSocket() socket, @MessageBody() data) {
     const { visitorcode, icecandidate } = data;
 
-    socket.to(visitorcode).emit("icecandidate", data);
+    socket.to(visitorcode).emit("ice", icecandidate);
   }
 }
