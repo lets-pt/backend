@@ -13,6 +13,9 @@ import { FfmpegModule } from './ffmpeg/ffmpeg.module';
 import { CommentGateway, RoomGateway } from './comment/comment.gateway';
 import { RoomModule } from './room/room.module';
 import * as mongoose from 'mongoose';
+import { UserController } from './user/user.controller';
+import { UserService } from './user/user.service';
+import { JwtStrategy } from './auth/jwt/jwt.strategy';
 
 @Module({
   imports: [
@@ -25,8 +28,8 @@ import * as mongoose from 'mongoose';
     AuthModule,
     FfmpegModule,
     RoomModule],
-  controllers: [AppController],
-  providers: [AppService, CommentGateway, RoomGateway],
+  controllers: [AppController, UserController],
+  providers: [AppService, CommentGateway, RoomGateway, UserService, JwtStrategy],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean = process.env.MODE === 'dev' ? true : false;

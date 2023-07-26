@@ -13,7 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload) {
+  async validate(payload: any) {
     const user = await this.userRepository.findUserByIdWithoutPassword(
       payload.sub,
     );
