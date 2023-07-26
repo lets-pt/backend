@@ -72,6 +72,7 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleIcecandidate(@ConnectedSocket() socket, @MessageBody() data) {
     const { visitorcode, icecandidate } = data;
 
+    console.log("icecandidate : ",icecandidate);
     socket.to(visitorcode).emit("ice", icecandidate);
   }
 }
