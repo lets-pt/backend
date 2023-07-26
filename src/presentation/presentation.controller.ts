@@ -11,4 +11,9 @@ export class PresentationController {
     createPresentation(@Body() createPresentationDTO: CreatePresentationDTO): Promise<Presentation> {
         return this.presentationService.createPresentation(createPresentationDTO);
     }
+
+    @Post('resultVideo')
+    updatePresentationResultVideo(@Body() body: any): Promise<Presentation> {
+        return this.presentationService.updateResultVideo(body.title, body.resultVideo);
+    }
 }
