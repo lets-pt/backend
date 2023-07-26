@@ -44,6 +44,8 @@ export class S3Service {
             Bucket: process.env.AWS_BUCKET_NAME,
             Key: String(file.originalname),
             Body: file.buffer,
+            ContentDisposition: 'inline',
+            ContentType: 'application/pdf',
         };
 
         try {
