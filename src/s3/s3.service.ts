@@ -38,4 +38,19 @@ export class S3Service {
             throw new Error('Failed to upload file.');
         }
     }
+
+    async uploadPdf(file: Express.Multer.File) {
+        const params = {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: String(file.originalname),
+            Body: file.buffer,
+        };
+
+        try {
+            const result = await this.s3.upload(params).promise();
+            return result.Location;
+        } catch (e) {
+            throw new Error('Failed to upload file.');
+        }
+    }
 }
