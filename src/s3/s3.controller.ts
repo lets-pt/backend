@@ -14,4 +14,12 @@ export class S3Controller {
         console.log(file);
         return this.s3Service.uploadFile(file);
     }
+
+    @ApiOperation({ summary: 'pdf 업로드' })
+    @Post('pdf')
+    @UseInterceptors(FileInterceptor('pdf'))
+    uploadPdf(@UploadedFile() file: Express.Multer.File) {
+        console.log(file);
+        return this.s3Service.uploadPdf(file);
+    }
 }
