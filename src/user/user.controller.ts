@@ -4,7 +4,7 @@ import {
   UseGuards,
   UseInterceptors,
 }
-from '@nestjs/common';
+  from '@nestjs/common';
 import { Controller, Get, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
@@ -25,7 +25,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
-  ) {}
+  ) { }
 
   @ApiOperation({ summary: '현재 유저 가져오기' })
   @UseGuards(JwtAuthGuard)
@@ -49,13 +49,13 @@ export class UserController {
     return this.userService.signUp(userRequestDTO);
   }
 
-  @ApiOperation({summary: '아이디 중복 확인'})
+  @ApiOperation({ summary: '아이디 중복 확인' })
   @Post('doubleCheckId')
   async doubleCheckId(@Body('id') id: string) {
     return await this.userService.isUserExistId(id);
   }
 
-  @ApiOperation({summary: '닉네임 중복 확인'})
+  @ApiOperation({ summary: '닉네임 중복 확인' })
   @Post('doubleCheckName')
   async doubleCheckName(@Body('name') name: string) {
     return await this.userService.isUserExistName(name);
