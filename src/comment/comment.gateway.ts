@@ -2,27 +2,9 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { Server, Socket } from 'socket.io';
 import { RoomService } from 'src/room/room.service';
 
-@WebSocketGateway({cors: { origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }, namespace: 'comment'}) //comment를 받을 클래스
-export class CommentGateway {
-  constructor(private readonly roomService: RoomService) { }
-  
-  @WebSocketServer() server: Server;
-
-  @SubscribeMessage('addComment')
-  handleMessage(socket: Socket, data: any): void {
-    //코멘트, 시간, 코멘트 남긴 유저
-    const { visitorcode, time, userId, comment } = data;
-
-    //room DB에 저장
-    this.roomService.addCommentToRoom(data);
-  }
-}
-
 @WebSocketGateway({ cors: { origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }, namespace: 'room' })
 export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
-  constructor(
-    private readonly commentGateway: CommentGateway,
-    private readonly roomService: RoomService,) { }
+  constructor(private readonly roomService: RoomService) { }
   rooms = [];
 
   @WebSocketServer() server: Server;
