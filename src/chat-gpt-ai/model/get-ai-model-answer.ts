@@ -17,3 +17,4 @@ export class GetAiModelAnswer{
     @IsOptional()
     maxTokens:number
 }
+

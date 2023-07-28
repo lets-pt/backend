@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { Configuration, OpenAIApi, CreateCompletionRequest} from 'openai';
 import { GetAiModelAnswer } from './model/get-ai-model-answer';
+import { PresentationService } from 'src/presentation/presentation.service';
 
 const DEFAULT_MODEL_ID = "text-davinci-003"
-const DEFAULT_TEMPERATURE = 0.9
-const DEFAULT_MAX_TOKENS = 2048
+const DEFAULT_TEMPERATURE = 0.3
+const DEFAULT_MAX_TOKENS = 1000
 
 @Injectable()
 export class ChatGptAiService {
     private readonly openAiApi:OpenAIApi
     private selectedModelId:string|undefined
-
+    private presentationService: PresentationService
     constructor(){
         const configuration = new Configuration({
             organization: process.env.ORGANIZATION_ID,
@@ -45,7 +46,7 @@ export class ChatGptAiService {
                 model = this.selectedModelId
              } 
              
-             const prompt = `${question} 위 스크립트 문장을 발표 형식에 맞게 매끄럽게 다듬어주세요`
+             const prompt = `다음 스크립트를 발표형식으로 간결하게 다듬어주세요.: : ${question}`
 
              const params:CreateCompletionRequest ={
                 prompt: prompt,
@@ -61,9 +62,36 @@ export class ChatGptAiService {
                 answer = answer.replace(/^\.+/, '');
                 return answer
              }
-             let answer = response.data[0]['text'].replace(/\n/g, '');
-             answer = answer.replace(/^\.+/, '');
-             return response.data[0]['text'].replace(/\n/g, '');
+            let answer = data.choices[0]['text'].replace(/\n/g, '');
+            answer = answer.replace(/^\.+/, '');
+             return answer
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    async getModelQna(sttScript:string): Promise<string>{
+        try {
+                       
+             const prompt = `다음 스크립트의 예상 질문과 간결한 답변 3가지 알려주세요: : ${sttScript}`
+
+             const params:CreateCompletionRequest ={
+                prompt: prompt,
+                model : DEFAULT_MODEL_ID,
+                temperature: DEFAULT_TEMPERATURE,
+                max_tokens: DEFAULT_MAX_TOKENS
+             }
+
+             const response = await this.openAiApi.createCompletion(params)
+             const {data} =response
+             if(data.choices.length){
+                let answer = data.choices[0]['text'].trim()
+                return answer;
+             }
+             let answer = data.choices[0]['text'].trim()
+                return answer
 
         } catch (error) {
             console.log(error);

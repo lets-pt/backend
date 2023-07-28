@@ -11,7 +11,6 @@ export class ChatGptAiController {
     @UsePipes(ValidationPipe)
     getModelAnswer(@Body() data: GetAiModelAnswer){
         return this.service.getModelAnswer(data)
-
     }
 
     @Get("/model")

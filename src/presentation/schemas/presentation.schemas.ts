@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { IsNotEmpty, IsString } from "class-validator";
 import { Document } from 'mongoose';
 import { Comment } from "./comment.schemas";
-import { Question } from "./question.schemas";
+// import { Question } from "./question.schemas";
 import { TimeData } from "./time.schemas";
 import { WordData } from "./word.schemas";
 
@@ -45,7 +45,7 @@ export class Presentation extends Document{ //Presentation
     pdfTime: TimeData[];
 
     @Prop()
-    question: Question[];
+    qna: string;
 }
 
 export const PresentationSchema = SchemaFactory.createForClass(Presentation);

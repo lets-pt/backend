@@ -5,10 +5,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreatePresentationDTO } from './dto/create-presentation.dto';
 import { Comment } from './schemas/comment.schemas';
 import { TimeData } from './schemas/time.schemas';
+import{ChatGptAiService} from '../chat-gpt-ai/chat-gpt-ai.service'
 
-@Injectable()
+@Injectable()   
 export class PresentationService {
-    constructor(@InjectModel(Presentation.name) private presentationModel: Model<PresentationDocument>) { }
+    constructor(@InjectModel(Presentation.name) private presentationModel: Model<PresentationDocument>, private chatGptAiService: ChatGptAiService,) { }
 
     //userId, title, pdf 3개만 발표 시작 버튼을 누를시 document 생성
     async createPresentation(createPresentationDTO: CreatePresentationDTO): Promise<Presentation> {
@@ -49,6 +50,7 @@ export class PresentationService {
             presentation.sttScript = sttScript;
             presentation.comment = comment;
             presentation.pdfTime = pdfTime;
+            this.updateQna(title, sttScript);
             return presentation.save();
         }
         catch (err) {
@@ -56,8 +58,8 @@ export class PresentationService {
         }
     }
 
-    //question : answer 저장
-    async updateQuestion(title: string, question: string, answer: string): Promise<Presentation> {
+    //qna 저장
+    async updateQna(title: string, sttScript : string): Promise<Presentation> {
         try {
             const presentation = await this.presentationModel.findOne({ title: title });
 
@@ -65,7 +67,8 @@ export class PresentationService {
                 throw new Error('Presentation not found');
             }
 
-            presentation.question.push({ question: question, answer: answer });
+            presentation.qna = await this.chatGptAiService.getModelQna(sttScript);
+            
             return presentation.save();
         }
         catch (err) {
