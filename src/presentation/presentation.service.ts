@@ -84,35 +84,28 @@ export class PresentationService {
 
     async updateWordCount(word: string): Promise<void> {
       try {
-        // 추천 단어 배열에서 단어 찾아서 count 업데이트
-        await this.presentationModel.updateOne(
-          { 'recommendedWord.word': word },
-          { $inc: { 'recommendedWord.$.count': 1 } }
-        ).exec();
-    
-        // 금지 단어 배열에서 단어 찾아서 count 업데이트
-        await this.presentationModel.updateOne(
-          { 'forbiddenWord.word': word },
-          { $inc: { 'forbiddenWord.$.count': 1 } }
-        ).exec();
-    
-        // 데이터베이스에서 sttScript를 불러와서 단어 발생 빈도를 세고 count 업데이트
         const presentation = await this.presentationModel.findOne({});
         if (presentation) {
-          const sttScriptOccurrences = this.countOccurrences(presentation.sttScript, word);
+          const sttScriptOccurrences = this.countOccurrences(
+            presentation.sttScript,
+            word,
+          );
           console.log(`sttScriptOccurrences: ${sttScriptOccurrences}`);
-    
-          if (sttScriptOccurrences > 0) {
-            await this.presentationModel.updateOne(
-              { sttScript: { $regex: `\\b${word}\\b`, $options: 'i' } },
-              { $inc: { 'recommendedWord.$.count': sttScriptOccurrences } }
-            ).exec();
-    
-            console.log(`단어 "${word}"의 발생 횟수를 업데이트했습니다.`);
-            console.log(presentation.sttScript);
-          } else {
-            console.log(`단어 "${word}"는 스크립트에서 발견되지 않았습니다.`);
-          }
+  
+          // 추천 단어 배열에서 단어 찾아서 count 업데이트
+          await this.presentationModel.updateOne(
+            { 'recommendedWord.word': word },
+            { $set: { 'recommendedWord.$.count': sttScriptOccurrences } },
+          ).exec();
+  
+          // 금지 단어 배열에서 단어 찾아서 count 업데이트
+          await this.presentationModel.updateOne(
+            { 'forbiddenWord.word': word },
+            { $set: { 'forbiddenWord.$.count': sttScriptOccurrences } },
+          ).exec();
+  
+          console.log(`단어 "${word}"의 발생 횟수를 업데이트했습니다.`);
+          console.log(presentation.sttScript);
         } else {
           console.error('프레젠테이션을 찾을 수 없습니다.');
         }
@@ -121,5 +114,4 @@ export class PresentationService {
         throw new Error(err);
       }
     }
-  
   }
