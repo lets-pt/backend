@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { ChatGptAiController } from './chat-gpt-ai.controller';
 import { ChatGptAiService } from './chat-gpt-ai.service';
 
+
 @Module({
   controllers: [ChatGptAiController],
-  providers: [ChatGptAiService]
+  providers: [ChatGptAiService],
+  exports:[ChatGptAiService]
 })
 export class ChatGptAiModule {}

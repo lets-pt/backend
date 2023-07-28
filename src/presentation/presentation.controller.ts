@@ -22,9 +22,9 @@ export class PresentationController {
         return this.presentationService.updatePresentation(body.title, body.sttScript, body.comment, body.pdfTime);
     }
 
-    @Post('question')
-    updateQuestion(@Body() body: any): Promise<Presentation> {
-        return this.presentationService.updateQuestion(body.title, body.question, body.answer);
+    @Post('qna')
+    updateQna(@Body() body: any): Promise<Presentation> {
+        return this.presentationService.updateQna(body.title, body.qna);
     }
 
     @Put('update-count')
