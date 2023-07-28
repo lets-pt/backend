@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Put } from '@nestjs/common';
 import { PresentationService } from './presentation.service';
 import { CreatePresentationDTO } from './dto/create-presentation.dto';
 import { Presentation } from './schemas/presentation.schemas';
@@ -26,4 +26,10 @@ export class PresentationController {
     updateQna(@Body() body: any): Promise<Presentation> {
         return this.presentationService.updateQna(body.title, body.qna);
     }
+
+    @Put('update-count')
+    async updateWordCount(@Body('word') word: string): Promise<void> {
+      await this.presentationService.updateWordCount(word);
+    }
+
 }
