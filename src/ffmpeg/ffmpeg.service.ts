@@ -11,7 +11,7 @@ const ffmpeg = require('fluent-ffmpeg');
 export class FfmpegService {
   constructor(private s3Service: S3Service, private presentationService: PresentationService) {}
 
-  async recieveFiles(cam: Express.Multer.File, screen: Express.Multer.File, title: string) {
+  async recieveFiles(cam: Express.Multer.File, screen: Express.Multer.File, title: string, userId: string) {
     const inputCamBuffer = cam.buffer;
     const inputScreenBuffer = screen.buffer;
 
@@ -30,7 +30,7 @@ export class FfmpegService {
       fs.writeFileSync(screenTempFilePath, inputScreenBuffer);
 
       // 임시 출력파일
-      const combinedVideoFilename = cam.originalname.substring(10);
+      const combinedVideoFilename = userId + cam.originalname.substring(10);
       const combinedVideoFilePath = tmp.tmpNameSync({ postfix: '.mp4' });
 
       await new Promise<void>((resolve, reject) => {
