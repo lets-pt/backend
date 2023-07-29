@@ -23,9 +23,10 @@ export class FfmpegController {
         recieveFiles(
             @UploadedFiles() files: { cam?: Express.Multer.File, screen?: Express.Multer.File },
             @Body('title') title: string,
+            @Body('userId') userId: string,
           ) {
             console.log(files.cam[0]);
             console.log(files.screen[0]);
             console.log(title);
-            return this.ffmpegService.recieveFiles(files.cam[0], files.screen[0], title);
+            return this.ffmpegService.recieveFiles(files.cam[0], files.screen[0], title, userId);
           }}
