@@ -9,7 +9,7 @@ import{ChatGptAiService} from '../chat-gpt-ai/chat-gpt-ai.service'
 
 @Injectable()   
 export class PresentationService {
-    constructor(@InjectModel(Presentation.name) private presentationModel: Model<PresentationDocument>) { }
+    constructor(@InjectModel(Presentation.name) private presentationModel: Model<PresentationDocument>, private ChatGptAiService:ChatGptAiService) { }
     private sttScript: string;
 
     //userId, title, pdf 3개만 발표 시작 버튼을 누를시 document 생성
@@ -68,7 +68,7 @@ export class PresentationService {
                 throw new Error('Presentation not found');
             }
 
-            presentation.qna = await this.chatGptAiService.getModelQna(sttScript);
+            presentation.qna = await this.ChatGptAiService.getModelQna(sttScript);
             
             return presentation.save();
         }

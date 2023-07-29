@@ -46,7 +46,7 @@ export class ChatGptAiService {
                 model = this.selectedModelId
              } 
              
-             const prompt = `다음 스크립트를 발표형식으로 간결하게 다듬어주세요.: : ${question}`
+             const prompt = `다음 스크립트를 간결하게 다듬어주세요.: ${question}`
 
              const params:CreateCompletionRequest ={
                 prompt: prompt,
@@ -57,13 +57,9 @@ export class ChatGptAiService {
 
              const response = await this.openAiApi.createCompletion(params)
              const {data} =response
-             if(data.choices.length){
-                let answer = data.choices[0]['text'].replace(/\n/g, '');
-                answer = answer.replace(/^\.+/, '');
-                return answer
-             }
-            let answer = data.choices[0]['text'].replace(/\n/g, '');
-            answer = answer.replace(/^\.+/, '');
+            
+             let answer = data.choices[0]['text'].replace(/\n/g, '');
+             answer = answer.replace(/^\.+/, '');
              return answer
 
         } catch (error) {
@@ -86,10 +82,7 @@ export class ChatGptAiService {
 
              const response = await this.openAiApi.createCompletion(params)
              const {data} =response
-             if(data.choices.length){
-                let answer = data.choices[0]['text'].trim()
-                return answer;
-             }
+            
              let answer = data.choices[0]['text'].trim()
                 return answer
 
