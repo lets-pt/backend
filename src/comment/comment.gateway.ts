@@ -5,7 +5,7 @@ import { RoomService } from 'src/room/room.service';
 @WebSocketGateway({ cors: { origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }, namespace: 'room' })
 export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
   constructor(private readonly roomService: RoomService) { }
-  rooms = [];
+  rooms = {}; //{roomCode: [socketId, socketId, ...]}
 
   @WebSocketServer() server: Server;
 
@@ -18,7 +18,17 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   handleDisconnect(socket: Socket) {
+    this.removeSocketFromRooms(socket);
     console.log(`Client disconnected: ${socket.id}`);
+  }
+
+  private removeSocketFromRooms(socket: Socket) { //방에서 나가면 방 목록에서도 나간다.
+    for (const roomId of Object.keys(this.rooms)) {
+      this.rooms[roomId] = this.rooms[roomId].filter(id => id !== socket.id);
+      if (this.rooms[roomId].length === 0) {
+        delete this.rooms[roomId];
+      }
+    }
   }
 
   @SubscribeMessage('createRoom')
@@ -27,52 +37,57 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { userId } = data;
 
     //참관코드 생성 및 DB 관련 작업
-    const room = await this.roomService.createRoom(userId);
-    this.rooms.push(room);
+    const roomCode = await this.roomService.createRoom(userId);
 
     //방장이 방에 입장하도록 한다.
-    socket.join(room); 
-    console.log("createRoom join: ",room, userId);
-    socket.emit("create-succ", room); //참관코드 전송
+    socket.join(roomCode); 
+
+    this.rooms[roomCode] = []; //방 참가자 초기화
+    this.rooms[roomCode].push(socket.id);
+
+    console.log("createRoom join: ",roomCode, socket.id);
+    socket.emit("create-succ", roomCode); //참관코드 전송
   }
 
   @SubscribeMessage('joinRoom')
   handleJoinRoom(@ConnectedSocket() socket, @MessageBody() data) {
     const { visitorcode, userId } = data;
 
+    if (!this.rooms[visitorcode]) {
+      socket.emit("join-fail", "존재하지 않는 방입니다.");
+      return;
+    }
     socket.join(visitorcode);
+    
+    this.rooms[visitorcode].push(socket.id); //방 목록에 추가
+    console.log("user list", this.rooms[visitorcode]);
+
     console.log("joinRoom join : ",visitorcode, userId);
-    socket.emit("join-succ", "입장");
+    socket.emit("join-succ", {visitorcode: visitorcode, userlist: this.rooms[visitorcode]});
   }
-
-  // @SubscribeMessage('exitRoom')
-  // handleExitRoom(@ConnectedSocket() socket, @MessageBody() data) {
-  //   const { visitorcode, userId } = data;
-
-  //   socket.leave(visitorcode);
-  //   console.log(visitorcode, userId);
-  //   socket.emit("exit-succ", "퇴장");
-  // }
 
   @SubscribeMessage('offer')
   handleOffer(@ConnectedSocket() socket, @MessageBody() data) {
-    const { visitorcode, offer } = data;
-
-    socket.to(visitorcode).emit("offer", data);
+    const { visitorcode, offer, to } = data;
+    if (this.rooms[visitorcode] && this.rooms[visitorcode].includes(to)) {
+      socket.to(to).emit("offer", {visitorcode: visitorcode, offer: offer, from: socket.id});
+    }
   }
 
   @SubscribeMessage('answer')
   handleAnswer(@ConnectedSocket() socket, @MessageBody() data) {
-    const { visitorcode, answer } = data;
-
-    socket.to(visitorcode).emit("answer", data);
+    const { visitorcode, answer, to } = data;
+    if (this.rooms[visitorcode] && this.rooms[visitorcode].includes(to)) {
+      socket.to(to).emit("answer", {visitorcode: visitorcode, answer: answer, from: socket.id});
+    }
   }
 
   @SubscribeMessage('ice')
   handleIcecandidate(@ConnectedSocket() socket, @MessageBody() data) {
-    const { visitorcode, icecandidate } = data;
+    const { visitorcode, icecandidate, to } = data;
 
-    console.log("icecandidate : ",icecandidate);
-    socket.to(visitorcode).emit("ice", icecandidate);
+    if (this.rooms[visitorcode] && this.rooms[visitorcode].includes(to)) {
+      socket.to(to).emit("ice", {visitorcode: visitorcode, icecandidate: icecandidate, from: socket.id});
+    }
   }
 }
