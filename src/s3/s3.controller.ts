@@ -6,8 +6,8 @@ import { ApiOperation } from '@nestjs/swagger';
 @Controller('s3')
 export class S3Controller {
     constructor(private readonly s3Service: S3Service) { }
-    
-    @ApiOperation({summary : 'S3 영상 업로드'})
+
+    @ApiOperation({ summary: 'S3 영상 업로드' })
     @Post()
     @UseInterceptors(FileInterceptor('video'))
     uploadFile(@UploadedFile() file: Express.Multer.File) {

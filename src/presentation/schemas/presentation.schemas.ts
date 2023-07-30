@@ -7,9 +7,9 @@ import { TimeData } from "./time.schemas";
 import { WordData } from "./word.schemas";
 
 export type PresentationDocument = Presentation & Document;
-    
+
 @Schema()
-export class Presentation extends Document{ //Presentation
+export class Presentation extends Document { //Presentation
     @Prop()
     @IsString()
     @IsNotEmpty()
@@ -46,6 +46,12 @@ export class Presentation extends Document{ //Presentation
 
     @Prop()
     qna: string;
+
+    @Prop()
+    settingTime: TimeData;
+
+    @Prop()
+    progressingTime: TimeData;
 }
 
 export const PresentationSchema = SchemaFactory.createForClass(Presentation);
