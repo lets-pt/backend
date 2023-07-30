@@ -63,7 +63,8 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     console.log("user list", this.rooms[visitorcode]);
 
     console.log("joinRoom join : ",visitorcode, userId);
-    socket.emit("join-succ", {visitorcode: visitorcode, userlist: this.rooms[visitorcode]});
+    socket.emit("join-succ", { visitorcode: visitorcode, userlist: this.rooms[visitorcode].filter((id) => id !== socket.id) });
+    socket.broadcast.emit("user-join", this.rooms[visitorcode].filter((id) => id !== socket.id));
   }
 
   @SubscribeMessage('offer')
