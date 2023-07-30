@@ -64,7 +64,8 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     console.log("joinRoom join : ",visitorcode, userId);
     socket.emit("join-succ", { visitorcode: visitorcode, userlist: this.rooms[visitorcode].filter((id) => id !== socket.id) });
-    socket.broadcast.emit("user-join", this.rooms[visitorcode].filter((id) => id !== socket.id));
+    console.log("user-join", this.rooms[visitorcode].filter((id) => id !== socket.id));
+    socket.broadcast.emit("user-join", this.rooms[visitorcode]);
   }
 
   @SubscribeMessage('offer')
@@ -92,3 +93,7 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 }
+
+// pdf 버튼 클릭시 같은 방에 연결된 피어들에게 pdf 넘기는 이벤트 발생시키기
+
+// 타이머?
