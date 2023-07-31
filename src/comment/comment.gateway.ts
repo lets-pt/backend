@@ -108,8 +108,14 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleRightArrow(@ConnectedSocket() socket) {
     socket.broadcast.emit("rightArrow");
   }
+
+  @SubscribeMessage('start-timer')
+  handleStartTimer(@ConnectedSocket() socket) {
+    socket.broadcast.emit("start-timer");
+  }
+
+  @SubscribeMessage('stop-timer')
+  handleStopTimer(@ConnectedSocket() socket) {
+    socket.broadcast.emit("stop-timer");
+  }
 }
-
-// pdf 버튼 클릭시 같은 방에 연결된 피어들에게 pdf 넘기는 이벤트 발생시키기
-
-// 타이머?
