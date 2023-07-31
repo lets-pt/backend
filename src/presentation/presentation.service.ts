@@ -39,8 +39,8 @@ export class PresentationService {
         }
     }
 
-    //sttScript, comment, pdfTime 저장
-    async updatePresentation(title: string, sttScript: string, comment: Comment[], pdfTime: TimeData[]): Promise<Presentation> {
+    //sttScript, comment, pdfTime, settingTime, progressingTime 저장
+    async updatePresentation(title: string, sttScript: string, comment: Comment[], pdfTime: TimeData[], settingTime: TimeData, progressingTime: TimeData): Promise<Presentation> {
         try {
             const presentation = await this.presentationModel.findOne({ title: title });
 
@@ -52,6 +52,8 @@ export class PresentationService {
             presentation.comment = comment;
             presentation.pdfTime = pdfTime;
             this.updateQna(title, sttScript);
+            presentation.settingTime = settingTime;
+            presentation.progressingTime = progressingTime;
             return presentation.save();
         }
         catch (err) {
