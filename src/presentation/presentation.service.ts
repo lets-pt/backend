@@ -60,11 +60,11 @@ export class PresentationService {
       await presentation.save();
 
       presentation.recommendedWord.forEach((wordData) => {
-        this.updateWordCount(wordData.word);
+        this.updateWordCount(title, wordData.word);
       })
 
       presentation.forbiddenWord.forEach((WordData) => {
-        this.updateWordCount(WordData.word);
+        this.updateWordCount(title, WordData.word);
       })
 
       return presentation;
@@ -104,15 +104,15 @@ export class PresentationService {
 
   //sttScript에서 단어를 카운트
   countOccurrences(text: string, word: string): number {
-    const regex = new RegExp(word, 'gi');
+    const regex = new RegExp(word, 'i');
     const matches = text.match(regex);
     return matches ? matches.length : 0;
   }
 
   // 단어 발생 횟수 업데이트
-  async updateWordCount(word: string): Promise<void> {
+  async updateWordCount(title: string, word: string): Promise<void> {
     try {
-      const presentation = await this.presentationModel.findOne({});
+      const presentation = await this.presentationModel.findOne({ title: title });
       if (presentation) {
         const sttScriptOccurrences = this.countOccurrences(
           presentation.sttScript,
