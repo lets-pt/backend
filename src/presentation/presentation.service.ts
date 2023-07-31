@@ -49,11 +49,11 @@ export class PresentationService {
       }
 
       presentation.sttScript = sttScript;
-
       presentation.pdfTime = pdfTime;
-      this.updateQna(title, sttScript);
+      presentation.qna = await this.updateQna(sttScript);
       presentation.settingTime = settingTime;
       presentation.progressingTime = progressingTime;
+      //update - count 최종 함수 작성
       return presentation.save();
     }
     catch (err) {
@@ -63,17 +63,9 @@ export class PresentationService {
   }
 
   //qna 저장
-  async updateQna(title: string, sttScript: string): Promise<Presentation> {
+  async updateQna(sttScript: string): Promise<string> {
     try {
-      const presentation = await this.presentationModel.findOne({ title: title });
-
-      if (!presentation) {
-        throw new Error('Presentation not found');
-      }
-
-      presentation.qna = await this.ChatGptAiService.getModelQna(sttScript);
-
-      return presentation.save();
+      return await this.ChatGptAiService.getModelQna(sttScript);
     }
     catch (err) {
       throw new Error(err);

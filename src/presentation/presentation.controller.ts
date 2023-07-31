@@ -28,18 +28,13 @@ export class PresentationController {
         return this.presentationService.updatePresentation(body.title, body.sttScript, body.pdfTime, body.settingTime, body.progressingTime);
     }
 
-    @Post('qna')
-    updateQna(@Body() body: any): Promise<Presentation> {
-        return this.presentationService.updateQna(body.title, body.qna);
-    }
-
     @Put('update-count')
     async updateWordCount(@Body('word') word: string): Promise<void> {
         await this.presentationService.updateWordCount(word);
     }
 
     @Get('pdf-url')
-    getPdfUrl(@Body('title') title: string): Promise<string> {
+    getPdfUrl(@Query('title') title: string): Promise<string> {
         return this.presentationService.getPdfUrl(title);
     }
 }
