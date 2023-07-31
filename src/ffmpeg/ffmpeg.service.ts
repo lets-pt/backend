@@ -40,7 +40,7 @@ export class FfmpegService {
           .output(combinedVideoFilePath)
           .videoCodec('libx264')
           .audioCodec('aac')
-          // .outputOptions('-vf', 'crop=1250:380:0:260') 화면 자르기
+          .outputOptions('-vf', 'crop=1250:380:0:260')
           .format('mp4')
           .on('end', () => {
             resolve();
