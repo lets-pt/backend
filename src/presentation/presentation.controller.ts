@@ -28,10 +28,10 @@ export class PresentationController {
         return this.presentationService.updatePresentation(body.title, body.sttScript, body.pdfTime, body.settingTime, body.progressingTime);
     }
 
-    @Put('update-count')
-    async updateWordCount(@Body('word') word: string): Promise<void> {
-        await this.presentationService.updateWordCount(word);
-    }
+    // @Put('update-count')
+    // async updateWordCount(@Body('word') word: string): Promise<void> {
+    //     await this.presentationService.updateWordCount(word);
+    // }
 
     @Put('update-comment')
     async updateComment(@Body() data: any) {
