@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Presentation, PresentationDocument} from './schemas/presentation.schemas';
-import {Comment} from './schemas/comment.schemas';
+import { Presentation, PresentationDocument } from './schemas/presentation.schemas';
+import { Comment } from './schemas/comment.schemas';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreatePresentationDTO } from './dto/create-presentation.dto';
@@ -56,7 +56,7 @@ export class PresentationService {
       presentation.settingTime = settingTime;
       presentation.progressingTime = progressingTime;
       //update - count 최종 함수 작성
-      
+
       await presentation.save();
 
       presentation.recommendedWord.forEach((wordData) => {
@@ -85,19 +85,19 @@ export class PresentationService {
     }
   }
 
-  // coment 업데이트
-  async updateComment(title:string, userComment:Comment,) :Promise<void>{
-    try{
-      
+  // comment 업데이트
+  async updateComment(title: string, userComment: Comment): Promise<void> {
+    try {
+
       const presentation = await this.presentationModel.findOne({ title: title });
 
       if (!presentation) {
         throw new Error('Presentation not found');
       }
       presentation.comment.push(userComment);
-    
+      presentation.save();
     }
-    catch(err){
+    catch (err) {
       throw new Error(err);
     }
   }

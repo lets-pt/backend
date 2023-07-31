@@ -33,6 +33,11 @@ export class PresentationController {
         await this.presentationService.updateWordCount(word);
     }
 
+    @Put('update-comment')
+    async updateComment(@Body() data: any) {
+        await this.presentationService.updateComment(data.title, data.userComment);
+    }
+
     @Get('pdf-url')
     getPdfUrl(@Query('title') title: string): Promise<string> {
         return this.presentationService.getPdfUrl(title);
