@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
 import { PresentationService } from './presentation.service';
 import { CreatePresentationDTO } from './dto/create-presentation.dto';
 import { Presentation } from './schemas/presentation.schemas';
@@ -13,7 +13,7 @@ export class PresentationController {
     }
 
     @Get()
-    async getPresentationData(@Body('title') title: string): Promise<string> {
+    async getPresentationData(@Query('title') title: string): Promise<string> {
         const result = await this.presentationService.findOneByTitle(title);
         return JSON.stringify(result);
     }
@@ -35,7 +35,7 @@ export class PresentationController {
 
     @Put('update-count')
     async updateWordCount(@Body('word') word: string): Promise<void> {
-      await this.presentationService.updateWordCount(word);
+        await this.presentationService.updateWordCount(word);
     }
 
     @Get('pdf-url')

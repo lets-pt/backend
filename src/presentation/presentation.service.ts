@@ -3,7 +3,6 @@ import { Presentation, PresentationDocument } from './schemas/presentation.schem
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreatePresentationDTO } from './dto/create-presentation.dto';
-import { Comment } from './schemas/comment.schemas';
 import { TimeData } from './schemas/time.schemas';
 import { ChatGptAiService } from '../chat-gpt-ai/chat-gpt-ai.service'
 
@@ -39,33 +38,28 @@ export class PresentationService {
     }
   }
 
+
   //sttScript, comment, pdfTime, settingTime, progressingTime 저장
-  async updatePresentation(title: string, sttScript: string, comment: Comment[], pdfTime: TimeData[], settingTime: TimeData, progressingTime: TimeData): Promise<Presentation> {
+  async updatePresentation(title: string, sttScript: string, pdfTime: TimeData[], settingTime: TimeData, progressingTime: TimeData): Promise<Presentation> {
     try {
       const presentation = await this.presentationModel.findOne({ title: title });
 
-    //sttScript, comment, pdfTime, settingTime, progressingTime 저장
-    async updatePresentation(title: string, sttScript: string, pdfTime: TimeData[], settingTime: TimeData, progressingTime: TimeData): Promise<Presentation> {
-        try {
-            const presentation = await this.presentationModel.findOne({ title: title });
+      if (!presentation) {
+        throw new Error('Presentation not found');
+      }
 
-            if (!presentation) {
-                throw new Error('Presentation not found');
-            }
+      presentation.sttScript = sttScript;
 
-            presentation.sttScript = sttScript;
-            
-            presentation.pdfTime = pdfTime;            
-            this.updateQna(title, sttScript);
-            presentation.settingTime = settingTime;
-            presentation.progressingTime = progressingTime;
-            return presentation.save();
-        }
-        catch (err) {
-            throw new Error(err);
-        }
-
+      presentation.pdfTime = pdfTime;
+      this.updateQna(title, sttScript);
+      presentation.settingTime = settingTime;
+      presentation.progressingTime = progressingTime;
+      return presentation.save();
     }
+    catch (err) {
+      throw new Error(err);
+    }
+
   }
 
   //qna 저장
