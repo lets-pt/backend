@@ -5,6 +5,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreatePresentationDTO } from './dto/create-presentation.dto';
 import { TimeData } from './schemas/time.schemas';
 import { ChatGptAiService } from '../chat-gpt-ai/chat-gpt-ai.service'
+import { WordData } from './schemas/word.schemas';
 
 @Injectable()
 export class PresentationService {
@@ -54,7 +55,18 @@ export class PresentationService {
       presentation.settingTime = settingTime;
       presentation.progressingTime = progressingTime;
       //update - count 최종 함수 작성
-      return presentation.save();
+      
+      await presentation.save();
+
+      presentation.recommendedWord.forEach((wordData) => {
+        this.updateWordCount(wordData.word);
+      })
+
+      presentation.forbiddenWord.forEach((WordData) => {
+        this.updateWordCount(WordData.word);
+      })
+
+      return presentation;
     }
     catch (err) {
       throw new Error(err);
