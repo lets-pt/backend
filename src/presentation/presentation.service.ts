@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Presentation, PresentationDocument } from './schemas/presentation.schemas';
+import { Presentation, PresentationDocument} from './schemas/presentation.schemas';
+import {Comment} from './schemas/comment.schemas';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreatePresentationDTO } from './dto/create-presentation.dto';
@@ -80,6 +81,23 @@ export class PresentationService {
       return await this.ChatGptAiService.getModelQna(sttScript);
     }
     catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  // coment 업데이트
+  async updateComment(title:string, userComment:Comment,) :Promise<void>{
+    try{
+      
+      const presentation = await this.presentationModel.findOne({ title: title });
+
+      if (!presentation) {
+        throw new Error('Presentation not found');
+      }
+      presentation.comment.push(userComment);
+    
+    }
+    catch(err){
       throw new Error(err);
     }
   }
