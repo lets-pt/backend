@@ -13,8 +13,9 @@ export class PresentationController {
     }
 
     @Get()
-    getPresentationData(@Body('title') title: string): Promise<Presentation> {
-        return this.presentationService.findOneByTitle(title);
+    async getPresentationData(@Body('title') title: string): Promise<string> {
+        const result = await this.presentationService.findOneByTitle(title);
+        return JSON.stringify(result);
     }
 
     @Post('resultVideo')
