@@ -92,6 +92,12 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       socket.to(to).emit("ice", {visitorcode: visitorcode, icecandidate: icecandidate, from: socket.id});
     }
   }
+
+  @SubscribeMessage('title-url')
+  handleTitleUrl(@ConnectedSocket() socket, @MessageBody() data) {
+    const { title, pdfURL } = data;
+    socket.broadcast.emit("title-url", {title: title, pdfURL: pdfURL});
+  }
 }
 
 // pdf 버튼 클릭시 같은 방에 연결된 피어들에게 pdf 넘기는 이벤트 발생시키기
