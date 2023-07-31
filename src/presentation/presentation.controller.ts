@@ -25,7 +25,7 @@ export class PresentationController {
 
     @Post('update')
     updatePresentation(@Body() body: any): Promise<Presentation> {
-        return this.presentationService.updatePresentation(body.title, body.sttScript, body.comment, body.pdfTime, body.settingTime, body.progressingTime);
+        return this.presentationService.updatePresentation(body.title, body.sttScript, body.pdfTime, body.settingTime, body.progressingTime);
     }
 
     @Post('qna')

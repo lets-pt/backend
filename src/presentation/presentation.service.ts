@@ -44,20 +44,27 @@ export class PresentationService {
     try {
       const presentation = await this.presentationModel.findOne({ title: title });
 
-      if (!presentation) {
-        throw new Error('Presentation not found');
-      }
+    //sttScript, comment, pdfTime, settingTime, progressingTime 저장
+    async updatePresentation(title: string, sttScript: string, pdfTime: TimeData[], settingTime: TimeData, progressingTime: TimeData): Promise<Presentation> {
+        try {
+            const presentation = await this.presentationModel.findOne({ title: title });
 
-      presentation.sttScript = sttScript;
-      presentation.comment = comment;
-      presentation.pdfTime = pdfTime;
-      this.updateQna(title, sttScript);
-      presentation.settingTime = settingTime;
-      presentation.progressingTime = progressingTime;
-      return presentation.save();
-    }
-    catch (err) {
-      throw new Error(err);
+            if (!presentation) {
+                throw new Error('Presentation not found');
+            }
+
+            presentation.sttScript = sttScript;
+            
+            presentation.pdfTime = pdfTime;            
+            this.updateQna(title, sttScript);
+            presentation.settingTime = settingTime;
+            presentation.progressingTime = progressingTime;
+            return presentation.save();
+        }
+        catch (err) {
+            throw new Error(err);
+        }
+
     }
   }
 
