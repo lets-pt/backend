@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put } from '@nestjs/common';
 import { PresentationService } from './presentation.service';
 import { CreatePresentationDTO } from './dto/create-presentation.dto';
 import { Presentation } from './schemas/presentation.schemas';
@@ -10,6 +10,11 @@ export class PresentationController {
     @Post()
     createPresentation(@Body() createPresentationDTO: CreatePresentationDTO): Promise<Presentation> {
         return this.presentationService.createPresentation(createPresentationDTO);
+    }
+
+    @Get()
+    getPresentationData(@Body('title') title: string): Promise<Presentation> {
+        return this.presentationService.findOneByTitle(title);
     }
 
     @Post('resultVideo')
@@ -32,4 +37,8 @@ export class PresentationController {
       await this.presentationService.updateWordCount(word);
     }
 
+    @Get('pdf-url')
+    getPdfUrl(@Body('title') title: string): Promise<string> {
+        return this.presentationService.getPdfUrl(title);
+    }
 }
