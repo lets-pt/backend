@@ -37,4 +37,9 @@ export class PresentationController {
     getPdfUrl(@Query('title') title: string): Promise<string> {
         return this.presentationService.getPdfUrl(title);
     }
+
+    @Get('get-title')
+    getTitle(@Query('userId') userId: string): Promise<string[]> {
+        return this.presentationService.getTitle(userId);
+    }
 }

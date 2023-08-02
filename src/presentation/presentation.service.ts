@@ -115,4 +115,11 @@ export class PresentationService {
   async getPdfUrl(title: string): Promise<string> {
     return (await this.findOneByTitle(title)).pdfURL;
   }
+
+  async getTitle(userId: string): Promise<string[]> {
+    const presentations = await this.presentationModel.find({ userId: userId });
+    console.log(presentations);
+    const titleList = presentations.map(presentation => presentation.title);
+    return titleList;
+  }
 }
