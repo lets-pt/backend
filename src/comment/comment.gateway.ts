@@ -95,8 +95,8 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('title-url')
   handleTitleUrl(@ConnectedSocket() socket, @MessageBody() data) {
-    const { title, pdfURL } = data;
-    socket.broadcast.emit("title-url", {title: title, pdfURL: pdfURL});
+    const { title, pdfURL, userName } = data;
+    socket.broadcast.emit("title-url", {title: title, pdfURL: pdfURL, userName: userName});
   }
 
   @SubscribeMessage('leftArrow')
