@@ -46,8 +46,7 @@ export class ChatGptAiService {
                 model = this.selectedModelId
              } 
              
-             const prompt = `다음 스크립트를 간결하게 다듬어주세요.: ${question}`
-
+             const prompt = `다음 스크립트를 간결하게 한국어로 다듬어주세요: ${question}`   
              const params:CreateCompletionRequest ={
                 prompt: prompt,
                 model : this.cleanModelId(model),
@@ -71,7 +70,7 @@ export class ChatGptAiService {
     async getModelQna(sttScript:string): Promise<string>{
         try {
                        
-             const prompt = `다음 스크립트의 예상 질문과 간결한 답변 3가지 알려주세요: : ${sttScript}`
+             const prompt = `다음 스크립트의 예상 질문과 간결한 답변 3가지 한국어로 알려주세요: : ${sttScript}`
 
              const params:CreateCompletionRequest ={
                 prompt: prompt,
@@ -81,8 +80,22 @@ export class ChatGptAiService {
              }
 
              const response = await this.openAiApi.createCompletion(params)
-             const {data} =response
+
+            // Check if the response status code is 429 (Too Many Requests)
+            if (response.status === 429) {
+            // Extract the "Retry-After" header
+            const retryAfterSeconds = parseInt(response.headers['retry-after']);
             
+            // Implement exponential backoff to wait before retrying
+            const waitTime = Math.pow(2, retryAfterSeconds); // Exponential backoff
+            await new Promise((resolve) => setTimeout(resolve, waitTime * 1000));
+            
+            // Retry the request
+            return this.getModelQna(sttScript);
+        }
+
+             const {data} =response
+           
              let answer = data.choices[0]['text'].trim()
                 return answer
 
