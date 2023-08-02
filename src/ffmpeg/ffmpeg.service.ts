@@ -41,7 +41,8 @@ export class FfmpegService {
             [
               {
                 filter: 'crop',
-                options: '650:280:30:260',
+                // options: '650:280:30:260', //gram
+                options: '840:470:60:310', //mac
                 inputs: '1:v', // screen 영상에 crop 필터를 적용하기 위해 인덱스 1을 사용합니다.
                 outputs: 'cropped_screen',
               },
@@ -78,12 +79,7 @@ export class FfmpegService {
           })
           .run();
       });
-      
-      
-      
-      
-      
-      
+
       const combinedVideoBuffer = fs.readFileSync(combinedVideoFilePath);
 
       // 임시파일 삭제
