@@ -23,10 +23,10 @@ export class PresentationController {
         return this.presentationService.updateResultVideo(body.title, body.resultVideo);
     }
 
-    @Post('update')
-    async updatePresentation(@Body() body: any): Promise<Presentation> {
-        return await this.presentationService.updatePresentation(body.title, body.sttScript, body.pdfTime, body.settingTime, body.progressingTime);
-    }
+    // @Post('update')
+    // async updatePresentation(@Body() body: any): Promise<Presentation> {
+    //     return await this.presentationService.updatePresentation(body.title, body.sttScript, body.pdfTime, body.settingTime, body.progressingTime);
+    // }
 
     @Put('update-comment')
     async updateComment(@Body() data: any) {
