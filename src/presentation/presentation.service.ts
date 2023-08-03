@@ -58,44 +58,6 @@ export class PresentationService {
     }
   }
 
-  //sttScript, pdfTime, settingTime, progressingTime 저장
-  async updatePresentation(title: string, sttScript: string, pdfTime: TimeData[], settingTime: TimeData, progressingTime: TimeData): Promise<Presentation> {
-    try {
-      const presentation = await this.presentationModel.findOne({ title: title });
-
-      if (!presentation) {
-        throw new Error('Presentation not found');
-      }
-
-      presentation.sttScript = sttScript;
-      presentation.pdfTime = pdfTime;
-      presentation.qna = await this.updateQna(sttScript);
-      presentation.settingTime = settingTime;
-      presentation.progressingTime = progressingTime;
-      
-      // 권장 단어 개수 업데이트
-      for (let i = 0; i < presentation.recommendedWord.length; i++) {
-        const w = presentation.recommendedWord[i];
-        w.count = this.countOccurrences(sttScript, w.word);
-        presentation.recommendedWord[i] = w;
-        console.log(w);
-      }
-
-      // 금지 단어 개수 업데이트
-      for (let i = 0; i < presentation.forbiddenWord.length; i++) {
-        const w = presentation.forbiddenWord[i];
-        w.count = this.countOccurrences(sttScript, w.word);
-        presentation.forbiddenWord[i] = w;
-        console.log(w);
-      }
-
-      return await presentation.save();
-    }
-    catch (err) {
-      throw new Error(err);
-    }
-  }
-
   //qna 저장
   async updateQna(sttScript: string): Promise<string> {
     try {
