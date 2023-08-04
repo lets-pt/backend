@@ -30,9 +30,22 @@ export class PresentationService {
       createPresentationDTO.forbiddenWord[i] = w;
       console.log(w);
     }
-
+    
+    const presentation = await this.presentationModel.findOne({ title: createPresentationDTO.title });
+    if (presentation) {
+      presentation.userId = createPresentationDTO.userId;
+      presentation.pdfURL = createPresentationDTO.pdfURL;
+      presentation.recommendedWord = createPresentationDTO.recommendedWord;
+      presentation.forbiddenWord = createPresentationDTO.forbiddenWord;
+      presentation.sttScript = createPresentationDTO.sttScript;
+      presentation.pdfTime = createPresentationDTO.pdfTime;
+      presentation.settingTime = createPresentationDTO.settingTime;
+      presentation.progressingTime = createPresentationDTO.progressingTime;
+      presentation.qna = qna;
+      return presentation.save();
+    }
+    
     const createData = { ...createPresentationDTO, qna };
-
     return this.presentationModel.create(createData);
   }
 
@@ -75,7 +88,8 @@ export class PresentationService {
       const presentation = await this.presentationModel.findOne({ title: title });
 
       if (!presentation) {
-        throw new Error('Presentation not found');
+        await this.presentationModel.create({ title: title, comment: userComment });
+        return;
       }
       presentation.comment.push(userComment);
       presentation.save();
