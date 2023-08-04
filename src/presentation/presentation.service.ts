@@ -6,15 +6,34 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreatePresentationDTO } from './dto/create-presentation.dto';
 import { TimeData } from './schemas/time.schemas';
 import { ChatGptAiService } from '../chat-gpt-ai/chat-gpt-ai.service'
-import { WordData } from './schemas/word.schemas';
 
 @Injectable()
 export class PresentationService {
   constructor(@InjectModel(Presentation.name) private presentationModel: Model<PresentationDocument>, private ChatGptAiService: ChatGptAiService) { }
 
-  //userId, title, pdf, recommendedWord, forbiddenWord 발표 시작 버튼을 누를시 document 생성
+  //userId, title, pdf, recommendedWord, forbiddenWord, sttScript, pdfTime, settingTime, progressingTime = DTO
   async createPresentation(createPresentationDTO: CreatePresentationDTO): Promise<Presentation> {
-    return this.presentationModel.create(createPresentationDTO);
+    const qna = await this.updateQna(createPresentationDTO.sttScript); //qna 생성
+
+    // 권장 단어 개수 업데이트
+    for (let i = 0; i < createPresentationDTO.recommendedWord.length; i++) {
+      const w = createPresentationDTO.recommendedWord[i];
+      w.count = this.countOccurrences(createPresentationDTO.sttScript, w.word);
+      createPresentationDTO.recommendedWord[i] = w;
+      console.log(w);
+    }
+
+    // 금지 단어 개수 업데이트
+    for (let i = 0; i < createPresentationDTO.forbiddenWord.length; i++) {
+      const w = createPresentationDTO.forbiddenWord[i];
+      w.count = this.countOccurrences(createPresentationDTO.sttScript, w.word);
+      createPresentationDTO.forbiddenWord[i] = w;
+      console.log(w);
+    }
+
+    const createData = { ...createPresentationDTO, qna };
+
+    return this.presentationModel.create(createData);
   }
 
   // title로 Presentation Document 찾기
@@ -33,44 +52,6 @@ export class PresentationService {
 
       presentation.resultVideo = resultVideo;
       return presentation.save();
-    }
-    catch (err) {
-      throw new Error(err);
-    }
-  }
-
-  //sttScript, comment, pdfTime, settingTime, progressingTime 저장
-  async updatePresentation(title: string, sttScript: string, pdfTime: TimeData[], settingTime: TimeData, progressingTime: TimeData): Promise<Presentation> {
-    try {
-      const presentation = await this.presentationModel.findOne({ title: title });
-
-      if (!presentation) {
-        throw new Error('Presentation not found');
-      }
-
-      presentation.sttScript = sttScript;
-      presentation.pdfTime = pdfTime;
-      presentation.qna = await this.updateQna(sttScript);
-      presentation.settingTime = settingTime;
-      presentation.progressingTime = progressingTime;
-      
-      // 권장 단어 개수 업데이트
-      for (let i = 0; i < presentation.recommendedWord.length; i++) {
-        const w = presentation.recommendedWord[i];
-        w.count = this.countOccurrences(sttScript, w.word);
-        presentation.recommendedWord[i] = w;
-        console.log(w);
-      }
-
-      // 금지 단어 개수 업데이트
-      for (let i = 0; i < presentation.forbiddenWord.length; i++) {
-        const w = presentation.forbiddenWord[i];
-        w.count = this.countOccurrences(sttScript, w.word);
-        presentation.forbiddenWord[i] = w;
-        console.log(w);
-      }
-
-      return await presentation.save();
     }
     catch (err) {
       throw new Error(err);
