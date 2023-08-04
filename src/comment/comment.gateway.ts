@@ -6,6 +6,7 @@ import { RoomService } from 'src/room/room.service';
 export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly roomService: RoomService) { }
   rooms = {}; //{roomCode: [socketId, socketId, ...]}
+  isRunning = {}; // {roomCode: true/false}
 
   @WebSocketServer() server: Server;
 
@@ -44,6 +45,7 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     this.rooms[roomCode] = []; //방 참가자 초기화
     this.rooms[roomCode].push(socket.id);
+    this.isRunning[roomCode] = false; //방이 시작되었는지 여부 초기화
 
     console.log("createRoom join: ", roomCode, socket.id);
     socket.emit("create-succ", roomCode); //참관코드 전송
@@ -57,6 +59,15 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       socket.emit("join-fail", "존재하지 않는 방입니다.");
       return;
     }
+    if (this.rooms[visitorcode].length >= 4) {
+      socket.emit("join-fail", "방이 꽉 찼습니다.");
+      return;
+    }
+    if (this.isRunning[visitorcode]) {
+      socket.emit("join-fail", "현재 진행중인 방입니다.");
+      return;
+    }
+
     socket.join(visitorcode);
 
     this.rooms[visitorcode].push(socket.id); //방 목록에 추가
@@ -117,5 +128,11 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('stop-timer')
   handleStopTimer(@ConnectedSocket() socket) {
     socket.broadcast.emit("stop-timer");
+  }
+
+  @SubscribeMessage('is-running')
+  handleIsRunning(@ConnectedSocket() socket, @MessageBody() data) {
+    const { visitorcode, isRunning } = data;
+    this.isRunning[visitorcode] = isRunning;
   }
 }
