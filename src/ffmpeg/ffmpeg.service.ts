@@ -9,7 +9,7 @@ const ffmpeg = require('fluent-ffmpeg');
 
 @Injectable()
 export class FfmpegService {
-  constructor(private s3Service: S3Service, private presentationService: PresentationService) {}
+  constructor(private s3Service: S3Service, private presentationService: PresentationService) { }
 
   async recieveFiles(cam: Express.Multer.File, screen: Express.Multer.File, title: string, userId: string) {
     const inputCamBuffer = cam.buffer;
@@ -42,7 +42,8 @@ export class FfmpegService {
               {
                 filter: 'crop',
                 // options: '650:280:30:260', //gram
-                options: '840:470:60:310', //mac
+                // options: '840:470:60:310', //mac
+                options: '820:470:90:345',
                 inputs: '1:v', // screen 영상에 crop 필터를 적용하기 위해 인덱스 1을 사용합니다.
                 outputs: 'cropped_screen',
               },

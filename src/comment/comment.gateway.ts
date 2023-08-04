@@ -2,8 +2,8 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { Server, Socket } from 'socket.io';
 import { RoomService } from 'src/room/room.service';
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }, namespace: 'room' })
-export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{
+@WebSocketGateway({ cors: { origin: ['http://15.165.41.221:3000', 'http://15.165.41.221:3001'], credentials: true }, namespace: 'room' })
+export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly roomService: RoomService) { }
   rooms = {}; //{roomCode: [socketId, socketId, ...]}
 
@@ -40,12 +40,12 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const roomCode = await this.roomService.createRoom(userId);
 
     //방장이 방에 입장하도록 한다.
-    socket.join(roomCode); 
+    socket.join(roomCode);
 
     this.rooms[roomCode] = []; //방 참가자 초기화
     this.rooms[roomCode].push(socket.id);
 
-    console.log("createRoom join: ",roomCode, socket.id);
+    console.log("createRoom join: ", roomCode, socket.id);
     socket.emit("create-succ", roomCode); //참관코드 전송
   }
 
@@ -58,11 +58,11 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       return;
     }
     socket.join(visitorcode);
-    
+
     this.rooms[visitorcode].push(socket.id); //방 목록에 추가
     console.log("user list", this.rooms[visitorcode]);
 
-    console.log("joinRoom join : ",visitorcode, userId);
+    console.log("joinRoom join : ", visitorcode, userId);
     socket.emit("join-succ", { visitorcode: visitorcode, userlist: this.rooms[visitorcode] });
     console.log("userlist", this.rooms[visitorcode]);
     socket.broadcast.emit("user-join", this.rooms[visitorcode]);
@@ -72,7 +72,7 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleOffer(@ConnectedSocket() socket, @MessageBody() data) {
     const { visitorcode, offer, to } = data;
     if (this.rooms[visitorcode] && this.rooms[visitorcode].includes(to)) {
-      socket.to(to).emit("offer", {visitorcode: visitorcode, offer: offer, from: socket.id});
+      socket.to(to).emit("offer", { visitorcode: visitorcode, offer: offer, from: socket.id });
     }
   }
 
@@ -80,7 +80,7 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handleAnswer(@ConnectedSocket() socket, @MessageBody() data) {
     const { visitorcode, answer, to } = data;
     if (this.rooms[visitorcode] && this.rooms[visitorcode].includes(to)) {
-      socket.to(to).emit("answer", {visitorcode: visitorcode, answer: answer, from: socket.id});
+      socket.to(to).emit("answer", { visitorcode: visitorcode, answer: answer, from: socket.id });
     }
   }
 
@@ -89,14 +89,14 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { visitorcode, icecandidate, to } = data;
 
     if (this.rooms[visitorcode] && this.rooms[visitorcode].includes(to)) {
-      socket.to(to).emit("ice", {visitorcode: visitorcode, icecandidate: icecandidate, from: socket.id});
+      socket.to(to).emit("ice", { visitorcode: visitorcode, icecandidate: icecandidate, from: socket.id });
     }
   }
 
   @SubscribeMessage('title-url')
   handleTitleUrl(@ConnectedSocket() socket, @MessageBody() data) {
     const { title, pdfURL, userName } = data;
-    socket.broadcast.emit("title-url", {title: title, pdfURL: pdfURL, userName: userName});
+    socket.broadcast.emit("title-url", { title: title, pdfURL: pdfURL, userName: userName });
   }
 
   @SubscribeMessage('leftArrow')
