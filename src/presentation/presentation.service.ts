@@ -4,7 +4,6 @@ import { Comment } from './schemas/comment.schemas';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreatePresentationDTO } from './dto/create-presentation.dto';
-import { TimeData } from './schemas/time.schemas';
 import { ChatGptAiService } from '../chat-gpt-ai/chat-gpt-ai.service'
 
 @Injectable()
@@ -31,9 +30,8 @@ export class PresentationService {
       console.log(w);
     }
     
-    const presentation = await this.presentationModel.findOne({ title: createPresentationDTO.title });
+    const presentation = await this.presentationModel.findOne({ title: createPresentationDTO.title, userId: createPresentationDTO.userId });
     if (presentation) {
-      presentation.userId = createPresentationDTO.userId;
       presentation.pdfURL = createPresentationDTO.pdfURL;
       presentation.recommendedWord = createPresentationDTO.recommendedWord;
       presentation.forbiddenWord = createPresentationDTO.forbiddenWord;
@@ -49,15 +47,16 @@ export class PresentationService {
     return this.presentationModel.create(createData);
   }
 
-  // title로 Presentation Document 찾기
-  async findOneByTitle(title: string): Promise<Presentation> {
-    return this.presentationModel.findOne({ title: title });
+  // title, userId로 Presentation Document 찾기
+  // localhost:3001/presentation?title=수빈_test_2023.8.4_23:52&userId=수빈
+  async findOneByTitle(title: string, userId: string): Promise<Presentation> {
+    return this.presentationModel.findOne({ title: title, userId: userId });
   }
 
   //resultVideo - ffmpeg 결과물을 저장할 때 사용 - s3에 저장된 url을 저장
-  async updateResultVideo(title: string, resultVideo: string): Promise<Presentation> {
+  async updateResultVideo(title: string, userId: string, resultVideo: string): Promise<Presentation> {
     try {
-      const presentation = await this.presentationModel.findOne({ title: title });
+      const presentation = await this.presentationModel.findOne({ title: title, userId: userId });
 
       if (!presentation) {
         throw new Error('Presentation not found');
@@ -82,13 +81,13 @@ export class PresentationService {
   }
 
   // comment 업데이트
-  async updateComment(title: string, userComment: Comment): Promise<void> {
+  async updateComment(title: string, userId: string, userComment: Comment): Promise<void> {
     try {
 
-      const presentation = await this.presentationModel.findOne({ title: title });
+      const presentation = await this.presentationModel.findOne({ title: title, userId: userId });
 
       if (!presentation) {
-        await this.presentationModel.create({ title: title, comment: userComment });
+        await this.presentationModel.create({ title: title, userId: userId, comment: userComment });
         return;
       }
       presentation.comment.push(userComment);
@@ -106,9 +105,9 @@ export class PresentationService {
     return matches ? matches.length : 0;
   }
 
-  // pdf url 전달하기
-  async getPdfUrl(title: string): Promise<string> {
-    return (await this.findOneByTitle(title)).pdfURL;
+  //pdf url 전달하기 - getpresentation과 동일 형식
+  async getPdfUrl(title: string, userId: string): Promise<string> {
+    return (await this.findOneByTitle(title, userId)).pdfURL;
   }
 
   async getTitle(userId: string): Promise<string[]> {
@@ -116,5 +115,10 @@ export class PresentationService {
     console.log(presentations);
     const titleList = presentations.map(presentation => presentation.title);
     return titleList;
+  }
+
+  async isTitleExist(title: string, userId: string): Promise<boolean> {
+    const titleList = await this.getTitle(userId);
+    return titleList.includes(title);
   }
 }
