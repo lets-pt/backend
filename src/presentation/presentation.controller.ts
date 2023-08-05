@@ -13,28 +13,33 @@ export class PresentationController {
     }
 
     @Get()
-    async getPresentationData(@Query('title') title: string): Promise<string> {
-        const result = await this.presentationService.findOneByTitle(title);
+    async getPresentationData(@Query('title') title: string, @Query('userId') userId: string): Promise<string> {
+        const result = await this.presentationService.findOneByTitle(title, userId);
         return JSON.stringify(result);
     }
 
     @Post('resultVideo')
     updatePresentationResultVideo(@Body() body: any): Promise<Presentation> {
-        return this.presentationService.updateResultVideo(body.title, body.resultVideo);
+        return this.presentationService.updateResultVideo(body.title, body.userId, body.resultVideo);
     }
 
     @Put('update-comment')
     async updateComment(@Body() data: any) {
-        await this.presentationService.updateComment(data.title, data.userComment);
+        await this.presentationService.updateComment(data.title, data.userId, data.userComment);
     }
 
     @Get('pdf-url')
-    getPdfUrl(@Query('title') title: string): Promise<string> {
-        return this.presentationService.getPdfUrl(title);
+    getPdfUrl(@Query('title') title: string, @Query('userId') userId: string): Promise<string> {
+        return this.presentationService.getPdfUrl(title, userId);
     }
 
     @Get('get-title')
     getTitle(@Query('userId') userId: string): Promise<string[]> {
         return this.presentationService.getTitle(userId);
+    }
+
+    @Get('is-title-exist')
+    handleIsTitleExist(@Query('title') title: string, @Query('userId') userId: string): Promise<boolean> {
+        return this.presentationService.isTitleExist(title, userId);
     }
 }

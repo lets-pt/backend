@@ -121,7 +121,7 @@ export class FfmpegService {
         path: null,
       });
 
-      await this.presentationService.updateResultVideo(title, result.fileurl);
+      await this.presentationService.updateResultVideo(title, userId, result.fileurl);
       console.log("ffmpeg성공!")
 
     } catch (err) {
