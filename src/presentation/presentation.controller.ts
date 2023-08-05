@@ -37,4 +37,9 @@ export class PresentationController {
     getTitle(@Query('userId') userId: string): Promise<string[]> {
         return this.presentationService.getTitle(userId);
     }
+
+    @Get('is-title-exist')
+    handleIsTitleExist(@Query('title') title: string, @Query('userId') userId: string): Promise<boolean> {
+        return this.presentationService.isTitleExist(title, userId);
+    }
 }
