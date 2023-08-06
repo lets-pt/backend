@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { S3Service } from 'src/s3/s3.service';
 import { PresentationService } from 'src/presentation/presentation.service';
+import { v4 as uuidv4 } from 'uuid';
 import * as tmp from 'tmp';
 import * as fs from 'fs';
+
 const ffmpeg = require('fluent-ffmpeg');
 
 @Injectable()
@@ -27,28 +29,6 @@ export class FfmpegService {
       fs.writeFileSync(camTempFilePath, inputCamBuffer);
       fs.writeFileSync(screenTempFilePath, inputScreenBuffer);
 
-      // 비디오 프레임의 크기를 파악합니다.
-      const screenVideoInfo = await this.getVideoInfo(screenTempFilePath);
-
-      // 비디오 프레임의 가로 크기와 세로 크기를 가져옵니다.
-      const screenWidth = screenVideoInfo.width;
-      const screenHeight = screenVideoInfo.height;
-      console.log("프레임크기확인")
-      console.log(screenWidth,screenHeight)
-
-      // 화면의 크기
-      const XSize = screenWidth*0.52
-      const YSize = screenHeight*0.52
-      console.log("화면사이즈확인")
-      console.log(XSize,YSize)
-      
-      // screen 비디오의 crop 좌표 계산
-      const screenCropX = screenWidth*0.08
-      const screenCropY = screenHeight*0.23
-      console.log("좌표확인")
-      console.log(screenCropX,screenCropY)
-
-
       // 임시 출력파일
       const combinedVideoFilename = userId + cam.originalname.substring(10);
       const combinedVideoFilePath = tmp.tmpNameSync({ postfix: '.mp4' });
@@ -59,34 +39,35 @@ export class FfmpegService {
           .input(screenTempFilePath)
           .complexFilter(
             [
-              // cam 비디오는 crop 필터 적용하지 않음
               {
                 filter: 'crop',
-                options: `${XSize}:${YSize}:${screenCropX}:${screenCropY}`,
-                inputs: '1:v',
+                // options: '650:280:30:260', //gram
+                // options: '840:470:60:310', //mac
+                options: '800:450:120:355',
+                inputs: '1:v', // screen 영상에 crop 필터를 적용하기 위해 인덱스 1을 사용합니다.
                 outputs: 'cropped_screen',
               },
               {
                 filter: 'scale',
-                options: '640:360',
-                inputs: '0:v',
+                options: '640:360', // 수정: cam 영상의 크기를 640x360으로 조정
+                inputs: '0:v', // cam 영상
                 outputs: 'scaled_cam',
               },
               {
                 filter: 'scale',
-                options: '640:360',
-                inputs: 'cropped_screen',
+                options: '640:280', // 수정: screen 영상의 크기를 640x280으로 조정
+                inputs: 'cropped_screen', // screen 영상
                 outputs: 'scaled_screen',
               },
               {
                 filter: 'vstack',
-                inputs: ['scaled_screen', 'scaled_cam'],
-                outputs: 'output_video',
+                inputs: ['scaled_screen', 'scaled_cam'], // scaled_screen과 scaled_cam을 vstack으로 세로로 합칩니다.
+                outputs: 'output_video', // 수정: complexFilter 결과로 새로운 스트림을 생성합니다.
               },
             ],
-            'output_video'
+            'output_video' // 수정: complexFilter의 두 번째 인자와 매칭되어야 합니다.
           )
-          .outputOptions('-map', '0:a')
+          .outputOptions('-map', '0:a') // cam 영상의 오디오 스트림을 선택
           .output(combinedVideoFilePath)
           .videoCodec('libx264')
           .audioCodec('aac')
@@ -127,25 +108,5 @@ export class FfmpegService {
     } catch (err) {
       console.error('Error during FFmpeg processing:', err);
     }
-  }
-
-  // 비디오 파일 정보를 가져오는 메서드
-  private getVideoInfo(filePath: string): Promise<{ width: number; height: number }> {
-    return new Promise((resolve, reject) => {
-      ffmpeg.ffprobe(filePath, (err: Error, data: any) => {
-        if (err) {
-          reject(err);
-        } else {
-          const videoStream = data.streams.find((s: any) => s.codec_type === 'video');
-          if (videoStream) {
-            const width = videoStream.width;
-            const height = videoStream.height;
-            resolve({ width, height });
-          } else {
-            reject(new Error('Video stream not found.'));
-          }
-        }
-      });
-    });
   }
 }
