@@ -42,4 +42,9 @@ export class PresentationController {
     handleIsTitleExist(@Query('title') title: string, @Query('userId') userId: string): Promise<boolean> {
         return this.presentationService.isTitleExist(title, userId);
     }
+
+    @Post('delete')
+    handleDelete(@Body() data: any): Promise<void> {
+        return this.presentationService.deleteByTitle(data.title, data.userId);
+    }
 }

@@ -121,4 +121,8 @@ export class PresentationService {
     const titleList = await this.getTitle(userId);
     return titleList.includes(title);
   }
+
+  async deleteByTitle(title: string, userId: string): Promise<void> {
+    await this.presentationModel.deleteOne({ title: title, userId: userId });
+  }
 }
