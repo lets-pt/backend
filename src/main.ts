@@ -18,7 +18,7 @@ async function bootstrap() {
   const document: OpenAPIObject = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
   app.enableCors({
-    origin: ['http://15.165.41.221:3000', 'http://15.165.41.221:3001'],
+    origin: ['http://localhost:3000', 'http://localhost:3001'],
     credentials: true,
   });
   await app.listen(3001);
