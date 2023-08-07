@@ -48,7 +48,7 @@ export class PresentationService {
   }
 
   // title, userId로 Presentation Document 찾기
-  // 15.165.41.221:3001/presentation?title=수빈_test_2023.8.4_23:52&userId=수빈
+  // localhost:3001/presentation?title=수빈_test_2023.8.4_23:52&userId=수빈
   async findOneByTitle(title: string, userId: string): Promise<Presentation> {
     return this.presentationModel.findOne({ title: title, userId: userId });
   }
