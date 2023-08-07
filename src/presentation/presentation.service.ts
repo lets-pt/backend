@@ -29,7 +29,7 @@ export class PresentationService {
       createPresentationDTO.forbiddenWord[i] = w;
       console.log(w);
     }
-    
+
     const presentation = await this.presentationModel.findOne({ title: createPresentationDTO.title, userId: createPresentationDTO.userId });
     if (presentation) {
       presentation.pdfURL = createPresentationDTO.pdfURL;
@@ -42,13 +42,13 @@ export class PresentationService {
       presentation.qna = qna;
       return presentation.save();
     }
-    
+
     const createData = { ...createPresentationDTO, qna };
     return this.presentationModel.create(createData);
   }
 
   // title, userId로 Presentation Document 찾기
-  // localhost:3001/presentation?title=수빈_test_2023.8.4_23:52&userId=수빈
+  // 15.165.41.221:3001/presentation?title=수빈_test_2023.8.4_23:52&userId=수빈
   async findOneByTitle(title: string, userId: string): Promise<Presentation> {
     return this.presentationModel.findOne({ title: title, userId: userId });
   }
@@ -59,7 +59,8 @@ export class PresentationService {
       const presentation = await this.presentationModel.findOne({ title: title, userId: userId });
 
       if (!presentation) {
-        throw new Error('Presentation not found');
+        await this.presentationModel.create({ title: title, userId: userId, resultVideo: resultVideo });
+        return;
       }
 
       presentation.resultVideo = resultVideo;
