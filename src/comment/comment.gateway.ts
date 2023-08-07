@@ -2,7 +2,7 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { Server, Socket } from 'socket.io';
 import { RoomService } from 'src/room/room.service';
 
-@WebSocketGateway({ cors: { origin: ['http://15.165.41.221:3000', 'http://15.165.41.221:3001'], credentials: true }, namespace: 'room' })
+@WebSocketGateway({ cors: { origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }, namespace: 'room' })
 export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly roomService: RoomService) { }
   rooms = {}; //{roomCode: [socketId, socketId, ...]}
@@ -76,7 +76,7 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     console.log("joinRoom join : ", visitorcode, userId);
     socket.emit("join-succ", { visitorcode: visitorcode, userlist: this.rooms[visitorcode] });
     console.log("userlist", this.rooms[visitorcode]);
-    socket.broadcast.emit("user-join", this.rooms[visitorcode]);
+    socket.broadcast.to(visitorcode).emit("user-join", this.rooms[visitorcode]);
   }
 
   @SubscribeMessage('offer')
@@ -106,28 +106,32 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
   @SubscribeMessage('title-url')
   handleTitleUrl(@ConnectedSocket() socket, @MessageBody() data) {
-    const { title, pdfURL, userName } = data;
-    socket.broadcast.emit("title-url", { title: title, pdfURL: pdfURL, userName: userName });
+    const { title, pdfURL, userName, visitorcode } = data;
+    socket.broadcast.to(visitorcode).emit("title-url", { title: title, pdfURL: pdfURL, userName: userName });
   }
 
   @SubscribeMessage('leftArrow')
-  handleLeftArrow(@ConnectedSocket() socket) {
-    socket.broadcast.emit("leftArrow");
+  handleLeftArrow(@ConnectedSocket() socket, @MessageBody() data) {
+    const { visitorcode } = data;
+    socket.broadcast.to(visitorcode).emit("leftArrow");
   }
 
   @SubscribeMessage('rightArrow')
-  handleRightArrow(@ConnectedSocket() socket) {
-    socket.broadcast.emit("rightArrow");
+  handleRightArrow(@ConnectedSocket() socket, @MessageBody() data) {
+    const { visitorcode } = data;
+    socket.broadcast.to(visitorcode).emit("rightArrow");
   }
 
   @SubscribeMessage('start-timer')
-  handleStartTimer(@ConnectedSocket() socket) {
-    socket.broadcast.emit("start-timer");
+  handleStartTimer(@ConnectedSocket() socket, @MessageBody() data) {
+    const { visitorcode } = data;
+    socket.broadcast.to(visitorcode).emit("start-timer");
   }
 
   @SubscribeMessage('stop-timer')
-  handleStopTimer(@ConnectedSocket() socket) {
-    socket.broadcast.emit("stop-timer");
+  handleStopTimer(@ConnectedSocket() socket, @MessageBody() data) {
+    const { visitorcode } = data;
+    socket.broadcast.to(visitorcode).emit("stop-timer");
   }
 
   @SubscribeMessage('is-running')
