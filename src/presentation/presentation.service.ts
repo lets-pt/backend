@@ -29,7 +29,7 @@ export class PresentationService {
       createPresentationDTO.forbiddenWord[i] = w;
       console.log(w);
     }
-    
+
     const presentation = await this.presentationModel.findOne({ title: createPresentationDTO.title, userId: createPresentationDTO.userId });
     if (presentation) {
       presentation.pdfURL = createPresentationDTO.pdfURL;
@@ -42,7 +42,7 @@ export class PresentationService {
       presentation.qna = qna;
       return presentation.save();
     }
-    
+
     const createData = { ...createPresentationDTO, qna };
     return this.presentationModel.create(createData);
   }
@@ -59,7 +59,8 @@ export class PresentationService {
       const presentation = await this.presentationModel.findOne({ title: title, userId: userId });
 
       if (!presentation) {
-        throw new Error('Presentation not found');
+        await this.presentationModel.create({ title: title, userId: userId, resultVideo: resultVideo });
+        return;
       }
 
       presentation.resultVideo = resultVideo;
