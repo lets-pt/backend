@@ -8,7 +8,7 @@ export class PresentationController {
     constructor(private readonly presentationService: PresentationService) { }
 
     @Post()
-    createPresentation(@Body() createPresentationDTO: CreatePresentationDTO): Promise<Presentation> {
+    createPresentation(@Body() createPresentationDTO: CreatePresentationDTO): Promise<void> {
         return this.presentationService.createPresentation(createPresentationDTO);
     }
 
@@ -46,5 +46,15 @@ export class PresentationController {
     @Post('delete')
     handleDelete(@Body() data: any): Promise<void> {
         return this.presentationService.deleteByTitle(data.title, data.userId);
+    }
+
+    @Get('getQnaData')
+    handleGetQnaData(@Query('title') title: string, @Query('userId') userId: string): Promise<string> {
+        return this.presentationService.getQnA(title, userId);
+    }
+
+    @Get('getVideoData')
+    handleGetVideoData(@Query('title') title: string, @Query('userId') userId: string): Promise<string> {
+        return this.presentationService.getResultVideo(title, userId);
     }
 }
