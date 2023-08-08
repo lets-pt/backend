@@ -12,7 +12,7 @@ export class PresentationService {
 
   //userId, title, pdf, recommendedWord, forbiddenWord, sttScript, pdfTime, settingTime, progressingTime = DTO
   async createPresentation(createPresentationDTO: CreatePresentationDTO): Promise<Presentation> {
-    const qna = await this.updateQna(createPresentationDTO.sttScript); //qna 생성
+    this.updateQna(createPresentationDTO.title, createPresentationDTO.userId, createPresentationDTO.sttScript); //qna 생성
 
     // 권장 단어 개수 업데이트
     for (let i = 0; i < createPresentationDTO.recommendedWord.length; i++) {
@@ -39,16 +39,14 @@ export class PresentationService {
       presentation.pdfTime = createPresentationDTO.pdfTime;
       presentation.settingTime = createPresentationDTO.settingTime;
       presentation.progressingTime = createPresentationDTO.progressingTime;
-      presentation.qna = qna;
       return presentation.save();
     }
 
-    const createData = { ...createPresentationDTO, qna };
-    return this.presentationModel.create(createData);
+    return this.presentationModel.create(createPresentationDTO);
   }
 
   // title, userId로 Presentation Document 찾기
-  // localhost:3001/presentation?title=수빈_test_2023.8.4_23:52&userId=수빈
+  // 15.165.41.221:3001/presentation?title=수빈_test_2023.8.4_23:52&userId=수빈
   async findOneByTitle(title: string, userId: string): Promise<Presentation> {
     return this.presentationModel.findOne({ title: title, userId: userId });
   }
@@ -72,9 +70,17 @@ export class PresentationService {
   }
 
   //qna 저장
-  async updateQna(sttScript: string): Promise<string> {
+  async updateQna(title: string, userId: string, sttScript: string): Promise<Presentation> {
     try {
-      return await this.ChatGptAiService.getModelQna(sttScript);
+      const presentation = await this.presentationModel.findOne({ title: title, userId: userId });
+      const stt = await this.ChatGptAiService.getModelQna(sttScript);
+
+      if (!presentation) {
+        await this.presentationModel.create({ title: title, userId: userId, qna: stt });
+        return;
+      }
+      presentation.qna = stt;
+      return presentation.save();
     }
     catch (err) {
       throw new Error(err);
@@ -125,5 +131,13 @@ export class PresentationService {
 
   async deleteByTitle(title: string, userId: string): Promise<void> {
     await this.presentationModel.deleteOne({ title: title, userId: userId });
+  }
+
+  async getQnA(title: string, userId: string): Promise<string> {
+    return (await this.findOneByTitle(title, userId)).qna;
+  }
+
+  async getResultVideo(title: string, userId: string): Promise<string> {
+    return (await this.findOneByTitle(title, userId)).resultVideo;
   }
 }

@@ -2,7 +2,7 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { Server, Socket } from 'socket.io';
 import { RoomService } from 'src/room/room.service';
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true }, namespace: 'room' })
+@WebSocketGateway({ cors: { origin: ['http://15.165.41.221:3000', 'http://15.165.41.221:3001'], credentials: true }, namespace: 'room' })
 export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly roomService: RoomService) { }
   rooms = {}; //{roomCode: [socketId, socketId, ...]}
@@ -113,6 +113,7 @@ export class RoomGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('leftArrow')
   handleLeftArrow(@ConnectedSocket() socket, @MessageBody() data) {
     const { visitorcode } = data;
+    console.log(visitorcode);
     socket.broadcast.to(visitorcode).emit("leftArrow");
   }
 
