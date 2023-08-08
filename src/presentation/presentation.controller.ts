@@ -8,7 +8,7 @@ export class PresentationController {
     constructor(private readonly presentationService: PresentationService) { }
 
     @Post()
-    createPresentation(@Body() createPresentationDTO: CreatePresentationDTO): Promise<Presentation> {
+    createPresentation(@Body() createPresentationDTO: CreatePresentationDTO): Promise<void> {
         return this.presentationService.createPresentation(createPresentationDTO);
     }
 
@@ -54,7 +54,7 @@ export class PresentationController {
     }
 
     @Get('getVideoData')
-    handleGetVideoData(@Query('title') title: string, @Query('userId') userId: string): Promise<string> { 
+    handleGetVideoData(@Query('title') title: string, @Query('userId') userId: string): Promise<string> {
         return this.presentationService.getResultVideo(title, userId);
     }
 }

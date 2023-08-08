@@ -11,9 +11,7 @@ export class PresentationService {
   constructor(@InjectModel(Presentation.name) private presentationModel: Model<PresentationDocument>, private ChatGptAiService: ChatGptAiService) { }
 
   //userId, title, pdf, recommendedWord, forbiddenWord, sttScript, pdfTime, settingTime, progressingTime = DTO
-  async createPresentation(createPresentationDTO: CreatePresentationDTO): Promise<Presentation> {
-    this.updateQna(createPresentationDTO.title, createPresentationDTO.userId, createPresentationDTO.sttScript); //qna 생성
-
+  async createPresentation(createPresentationDTO: CreatePresentationDTO): Promise<void> {
     // 권장 단어 개수 업데이트
     for (let i = 0; i < createPresentationDTO.recommendedWord.length; i++) {
       const w = createPresentationDTO.recommendedWord[i];
@@ -39,10 +37,11 @@ export class PresentationService {
       presentation.pdfTime = createPresentationDTO.pdfTime;
       presentation.settingTime = createPresentationDTO.settingTime;
       presentation.progressingTime = createPresentationDTO.progressingTime;
-      return presentation.save();
+      presentation.save();
+    } else {
+      await this.presentationModel.create(createPresentationDTO);
     }
-
-    return this.presentationModel.create(createPresentationDTO);
+    this.updateQna(createPresentationDTO.title, createPresentationDTO.userId, createPresentationDTO.sttScript); //qna 생성
   }
 
   // title, userId로 Presentation Document 찾기
@@ -57,8 +56,7 @@ export class PresentationService {
       const presentation = await this.presentationModel.findOne({ title: title, userId: userId });
 
       if (!presentation) {
-        await this.presentationModel.create({ title: title, userId: userId, resultVideo: resultVideo });
-        return;
+        throw new Error("no presentation");
       }
 
       presentation.resultVideo = resultVideo;
@@ -72,13 +70,13 @@ export class PresentationService {
   //qna 저장
   async updateQna(title: string, userId: string, sttScript: string): Promise<Presentation> {
     try {
-      const presentation = await this.presentationModel.findOne({ title: title, userId: userId });
       const stt = await this.ChatGptAiService.getModelQna(sttScript);
+      const presentation = await this.presentationModel.findOne({ title: title, userId: userId });
 
       if (!presentation) {
-        await this.presentationModel.create({ title: title, userId: userId, qna: stt });
-        return;
+        throw new Error("no presentation");
       }
+
       presentation.qna = stt;
       return presentation.save();
     }
